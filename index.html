@@ -1,420 +1,163 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AuraSole Demo</title>
 
-  <title>AuraSole｜糖尿病足風險監測</title>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    :root {
-      --primary: #087f8c;
-      --secondary: #06a77d;
-      --dark: #263238;
-      --gray: #667085;
-      --background: #f2f5f7;
-      --card: #ffffff;
-      --green: #52b788;
-      --yellow: #f4a261;
-      --red: #e63946;
-      --blue: #277da1;
-    }
-
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      font-family: Arial, "Noto Sans TC", sans-serif;
-      background: var(--background);
-      color: var(--dark);
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f2f5f7;
+      color: #263238;
     }
 
-    .container {
-      width: min(100% - 32px, 1050px);
-      margin: 0 auto;
-      padding: 24px 0 40px;
+    .app {
+      max-width: 850px;
+      margin: auto;
     }
 
     header {
+      padding: 28px;
       color: white;
-      padding: 36px 28px;
-      border-radius: 24px;
-      margin-bottom: 22px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      box-shadow: 0 8px 25px rgba(8, 127, 140, 0.2);
+      border-radius: 20px;
+      background: linear-gradient(135deg, #087f8c, #06a77d);
     }
 
     header h1 {
-      margin: 0 0 10px;
-      font-size: clamp(30px, 6vw, 48px);
+      margin: 0 0 8px;
+      font-size: 36px;
     }
 
     header p {
       margin: 0;
-      font-size: 18px;
-      line-height: 1.6;
-    }
-
-    .tag {
-      display: inline-block;
-      margin-top: 18px;
-      padding: 7px 13px;
-      border: 1px solid rgba(255, 255, 255, 0.55);
-      border-radius: 20px;
-      font-size: 13px;
     }
 
     .card {
-      padding: 24px;
-      margin-bottom: 22px;
-      background: var(--card);
-      border-radius: 20px;
-      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.07);
+      margin-top: 18px;
+      padding: 22px;
+      border-radius: 18px;
+      background: white;
+      box-shadow: 0 4px 15px #d9d9d9;
     }
 
-    .card h2 {
-      margin-top: 0;
-      color: var(--primary);
-    }
-
-    .card h3 {
-      color: var(--dark);
-    }
-
-    .intro {
-      line-height: 1.8;
-      color: #475467;
-    }
-
-    .status {
-      padding: 20px;
-      border-radius: 16px;
+    #status {
+      padding: 18px;
+      border-radius: 13px;
       text-align: center;
-      font-size: 23px;
+      font-size: 22px;
       font-weight: bold;
       background: #b7efc5;
       color: #176b36;
-      transition: 0.3s;
     }
 
-    .status.warning {
-      background: #ffe69c;
-      color: #795600;
+    .warning {
+      background: #ffe69c !important;
+      color: #795600 !important;
     }
 
-    .status.high {
-      background: #ffb3b3;
-      color: #8b0000;
+    .danger {
+      background: #ffb3b3 !important;
+      color: #8b0000 !important;
     }
 
-    .status-subtitle {
+    .status-small {
       display: block;
       margin-top: 7px;
       font-size: 14px;
       font-weight: normal;
     }
 
-    .grid {
+    .dashboard {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 22px;
-    }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .metric {
-      padding: 16px 10px;
-      border-radius: 14px;
-      text-align: center;
-      background: #f7fafb;
-      border: 1px solid #e5e7eb;
-    }
-
-    .metric strong {
-      display: block;
-      margin-top: 7px;
-      font-size: 21px;
-      color: var(--primary);
-    }
-
-    .metric span {
-      color: var(--gray);
-      font-size: 13px;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
     }
 
     .foot {
       position: relative;
-      width: 190px;
-      height: 345px;
-      margin: 26px auto 15px;
+      width: 150px;
+      height: 275px;
+      margin: 20px auto;
+      border: 4px solid #d5b59c;
+      border-radius: 75px 75px 45px 45px;
       background: #ead2bd;
-      border: 5px solid #d5b59c;
-      border-radius: 95px 95px 58px 58px;
-      transition: 0.3s;
-    }
-
-    .foot::before {
-      content: "";
-      position: absolute;
-      top: 68px;
-      left: 16px;
-      right: 16px;
-      border-top: 2px dashed rgba(110, 70, 40, 0.35);
     }
 
     .point {
       position: absolute;
-      width: 38px;
-      height: 38px;
-      border: 4px solid white;
+      width: 30px;
+      height: 30px;
+      border: 3px solid white;
       border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      transition: 0.3s;
-    }
-
-    .point-label {
-      position: absolute;
-      width: 120px;
-      font-size: 12px;
-      color: #604734;
-      text-align: center;
+      background: #52b788;
+      transition: 0.4s;
     }
 
     #toe {
-      top: 32px;
-      left: 72px;
+      top: 25px;
+      left: 57px;
     }
 
-    #toe-label {
-      top: -2px;
-      left: 112px;
+    #met1 {
+      top: 90px;
+      left: 28px;
     }
 
-    #front1 {
-      top: 115px;
-      left: 38px;
-    }
-
-    #front1-label {
-      top: 121px;
-      left: -116px;
-    }
-
-    #front5 {
-      top: 115px;
-      right: 27px;
-    }
-
-    #front5-label {
-      top: 121px;
-      left: 112px;
+    #met5 {
+      top: 90px;
+      right: 22px;
     }
 
     #heel {
-      bottom: 28px;
-      left: 72px;
+      bottom: 25px;
+      left: 57px;
     }
 
-    #heel-label {
-      bottom: 35px;
-      left: 112px;
-    }
-
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 16px;
-      color: var(--gray);
-      font-size: 14px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .legend-dot {
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-    }
-
-    .green-dot {
-      background: var(--green);
-    }
-
-    .yellow-dot {
-      background: var(--yellow);
-    }
-
-    .red-dot {
-      background: var(--red);
-    }
-
-    .data-box {
-      padding: 18px;
-      border-radius: 15px;
-      background: #f7fafb;
-      line-height: 2;
+    .data {
+      line-height: 2.2;
       font-size: 16px;
     }
 
-    .data-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .data-row:last-child {
-      border-bottom: none;
-    }
-
-    .data-value {
+    .data span {
+      float: right;
       font-weight: bold;
-      color: var(--primary);
+      color: #087f8c;
     }
 
-    .chart-container {
-      position: relative;
-      width: 100%;
-      height: 310px;
-      margin: 20px 0 34px;
+    .chart {
+      height: 270px;
     }
 
-    .chart-description {
-      color: var(--gray);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    button {
-      border: none;
-      border-radius: 11px;
-      padding: 13px 19px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      opacity: 0.88;
-    }
-
-    .normal-button {
-      background: #95d5b2;
-      color: #124b2b;
-    }
-
-    .warning-button {
-      background: #ffd166;
-      color: #604800;
-    }
-
-    .high-button {
-      background: #ef767a;
-      color: white;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-      font-size: 14px;
-    }
-
-    th,
-    td {
-      padding: 12px 8px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: center;
-    }
-
-    th {
-      color: var(--primary);
-      background: #f7fafb;
-    }
-
-    .risk-normal {
-      color: #176b36;
-      font-weight: bold;
-    }
-
-    .risk-warning {
-      color: #a66b00;
-      font-weight: bold;
-    }
-
-    .risk-high {
-      color: #b42318;
-      font-weight: bold;
-    }
-
-    .notice {
-      color: var(--gray);
-      font-size: 13px;
+    .tip {
       line-height: 1.7;
+      color: #555;
     }
 
-    footer {
-      padding: 10px;
-      color: var(--gray);
-      text-align: center;
+    .small {
+      color: #777;
       font-size: 13px;
     }
 
-    @media (max-width: 720px) {
-      .container {
-        width: min(100% - 20px, 1050px);
-        padding-top: 10px;
+    @media (max-width: 650px) {
+      body {
+        padding: 10px;
       }
 
-      .grid {
+      .dashboard {
         grid-template-columns: 1fr;
       }
 
-      .metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .card {
-        padding: 18px;
-      }
-
-      .chart-container {
-        height: 260px;
-      }
-
-      table {
-        font-size: 12px;
-      }
-
-      th,
-      td {
-        padding: 9px 4px;
+      header h1 {
+        font-size: 30px;
       }
     }
   </style>
@@ -422,364 +165,162 @@
 
 <body>
 
-  <main class="container">
+  <div class="app">
 
     <header>
       <h1>AuraSole</h1>
-      <p>糖尿病足日常風險監測方案</p>
-      <span class="tag">壓力 + 溫度 + 個人化趨勢分析</span>
+      <p>糖尿病足日常風險監測原型</p>
     </header>
 
     <section class="card">
-      <h2>產品定位</h2>
-
-      <p class="intro">
-        AuraSole 是一個用於日常健康管理的智慧足底監測概念，
-        透過足底壓力、左右腳溫度差及歷史趨勢，
-        協助使用者及早留意可能需要檢查的足部異常。
-      </p>
-
-      <p class="notice">
-        本頁面是產品展示原型，所有數據均為模擬數據，
-        不構成醫療診斷或治療建議。
-      </p>
-    </section>
-
-    <section class="card">
-      <div id="status" class="status">
+      <div id="status">
         低風險：數據正常
-        <span class="status-subtitle">
-          建議維持每日足部檢查
+        <span class="status-small">
+          系統正在自動更新模擬數據
         </span>
       </div>
     </section>
 
-    <section class="grid">
+    <div class="dashboard">
 
-      <div class="card">
+      <section class="card">
         <h2>DFU Risk Map</h2>
 
         <div class="foot">
           <div id="toe" class="point"></div>
-          <div id="front1" class="point"></div>
-          <div id="front5" class="point"></div>
+          <div id="met1" class="point"></div>
+          <div id="met5" class="point"></div>
           <div id="heel" class="point"></div>
-
-          <div id="toe-label" class="point-label">
-            大拇趾
-          </div>
-
-          <div id="front1-label" class="point-label">
-            第一蹠骨
-          </div>
-
-          <div id="front5-label" class="point-label">
-            第五蹠骨
-          </div>
-
-          <div id="heel-label" class="point-label">
-            腳跟
-          </div>
         </div>
 
-        <div class="legend">
-          <div class="legend-item">
-            <span class="legend-dot green-dot"></span>
-            正常
-          </div>
+        <p class="small">
+          綠色：正常　黃色：需留意　紅色：高風險
+        </p>
+      </section>
 
-          <div class="legend-item">
-            <span class="legend-dot yellow-dot"></span>
-            需要留意
-          </div>
-
-          <div class="legend-item">
-            <span class="legend-dot red-dot"></span>
-            高風險
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
+      <section class="card">
         <h2>即時數據</h2>
 
-        <div class="data-box">
-          <div class="data-row">
-            <span>左腳溫度</span>
-            <span id="leftTemp" class="data-value">31.2°C</span>
-          </div>
-
-          <div class="data-row">
-            <span>右腳溫度</span>
-            <span id="rightTemp" class="data-value">31.5°C</span>
-          </div>
-
-          <div class="data-row">
-            <span>左右溫差</span>
-            <span id="tempDifference" class="data-value">0.3°C</span>
-          </div>
-
-          <div class="data-row">
-            <span>最大足底壓力</span>
-            <span id="maxPressure" class="data-value">320</span>
-          </div>
-
-          <div class="data-row">
-            <span>最後量測</span>
-            <span id="lastMeasurement" class="data-value">今天 20:00</span>
-          </div>
+        <div class="data">
+          左腳溫度：<span id="left">31.2°C</span><br>
+          右腳溫度：<span id="right">31.5°C</span><br>
+          左右溫差：<span id="difference">0.3°C</span><br>
+          最大壓力：<span id="pressure">320</span><br>
+          系統狀態：<span id="mode">正常</span>
         </div>
+      </section>
 
-        <div class="metrics">
-          <div class="metric">
-            <span>量測天數</span>
-            <strong>7</strong>
-          </div>
+    </div>
 
-          <div class="metric">
-            <span>目前風險</span>
-            <strong id="riskScore">低</strong>
-          </div>
+    <section class="card">
+      <h2>最近 7 日歷史趨勢</h2>
 
-          <div class="metric">
-            <span>異常點</span>
-            <strong id="abnormalPoints">0</strong>
-          </div>
-
-          <div class="metric">
-            <span>依從率</span>
-            <strong>86%</strong>
-          </div>
-        </div>
+      <div class="chart">
+        <canvas id="trendChart"></canvas>
       </div>
-
     </section>
 
     <section class="card">
-      <h2>歷史趨勢</h2>
+      <h2>系統建議</h2>
 
-      <p class="chart-description">
-        以下圖表顯示最近 7 日的模擬數據。
-        實際產品可連接感測器後，持續記錄個人化足部趨勢。
+      <p id="tip" class="tip">
+        請繼續每日檢查足部皮膚，保持足部清潔及乾爽。
       </p>
 
-      <div class="chart-container">
-        <canvas id="temperatureChart"></canvas>
-      </div>
-
-      <div class="chart-container">
-        <canvas id="pressureChart"></canvas>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>最近 7 日記錄</h2>
-
-      <table>
-        <thead>
-          <tr>
-            <th>日期</th>
-            <th>左右溫差</th>
-            <th>最大壓力</th>
-            <th>風險</th>
-          </tr>
-        </thead>
-
-        <tbody id="historyTable">
-          <tr>
-            <td>10/07</td>
-            <td>0.2°C</td>
-            <td>300</td>
-            <td class="risk-normal">正常</td>
-          </tr>
-
-          <tr>
-            <td>10/08</td>
-            <td>0.1°C</td>
-            <td>320</td>
-            <td class="risk-normal">正常</td>
-          </tr>
-
-          <tr>
-            <td>10/09</td>
-            <td>0.4°C</td>
-            <td>350</td>
-            <td class="risk-normal">正常</td>
-          </tr>
-
-          <tr>
-            <td>10/10</td>
-            <td>0.4°C</td>
-            <td>410</td>
-            <td class="risk-normal">正常</td>
-          </tr>
-
-          <tr>
-            <td>10/11</td>
-            <td>0.7°C</td>
-            <td>520</td>
-            <td class="risk-warning">需留意</td>
-          </tr>
-
-          <tr>
-            <td>10/12</td>
-            <td>1.7°C</td>
-            <td>655</td>
-            <td class="risk-warning">需留意</td>
-          </tr>
-
-          <tr>
-            <td>今天</td>
-            <td>0.3°C</td>
-            <td>320</td>
-            <td class="risk-normal">正常</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <section class="card">
-      <h2>展示模式</h2>
-
-      <p class="chart-description">
-        按下按鈕，模擬不同足部狀態。
+      <p class="small">
+        本頁面為展示原型，數據為模擬資料，不構成醫療診斷。
       </p>
-
-      <div class="buttons">
-        <button class="normal-button" onclick="setNormal()">
-          正常狀態
-        </button>
-
-        <button class="warning-button" onclick="setWarning()">
-          模擬異常
-        </button>
-
-        <button class="high-button" onclick="setHigh()">
-          模擬高風險
-        </button>
-      </div>
     </section>
 
-    <section class="card">
-      <h2>行動建議</h2>
-
-      <div id="recommendation" class="intro">
-        請繼續每日檢查足部皮膚，並保持足部清潔及乾爽。
-      </div>
-    </section>
-
-    <footer>
-      AuraSole Concept Demo · For presentation only
-    </footer>
-
-  </main>
+  </div>
 
   <script>
-    /*
-      -------------------------
-      1. 基本資料
-      -------------------------
-    */
+    const status = document.getElementById("status");
+    const left = document.getElementById("left");
+    const right = document.getElementById("right");
+    const difference = document.getElementById("difference");
+    const pressure = document.getElementById("pressure");
+    const mode = document.getElementById("mode");
+    const tip = document.getElementById("tip");
 
-    const days = [
-      "10/07",
-      "10/08",
-      "10/09",
-      "10/10",
-      "10/11",
-      "10/12",
-      "今天"
+    const points = document.querySelectorAll(".point");
+
+    const states = [
+      {
+        name: "normal",
+        title: "低風險：數據正常",
+        subtitle: "建議維持每日足部檢查",
+        left: 31.2,
+        right: 31.5,
+        pressure: 320,
+        tip: "請繼續每日檢查足部皮膚，保持足部清潔及乾爽。",
+        color: "#52b788",
+        chartRight: [31.3, 31.4, 31.5, 31.4, 31.5, 31.4, 31.5],
+        chartPressure: [300, 320, 350, 310, 330, 320, 320]
+      },
+
+      {
+        name: "warning",
+        title: "需要留意：建議減壓及檢查足部",
+        subtitle: "請檢查有沒有紅腫、水泡或破皮",
+        left: 31.4,
+        right: 33.1,
+        pressure: 655,
+        tip: "請減少長時間步行，檢查右腳前掌有沒有紅腫、水泡或破皮。",
+        color: "#f4a261",
+        chartRight: [31.4, 31.5, 31.6, 31.8, 32.2, 32.7, 33.1],
+        chartPressure: [320, 350, 410, 450, 520, 580, 655]
+      },
+
+      {
+        name: "danger",
+        title: "高風險：請停止負重並聯絡醫護人員",
+        subtitle: "如有傷口、紅腫或滲液，請盡快求醫",
+        left: 31.5,
+        right: 34.3,
+        pressure: 850,
+        tip: "請停止負重並檢查足部；如有傷口、紅腫、滲液或變色，請盡快聯絡醫護人員。",
+        color: "#e63946",
+        chartRight: [31.4, 31.5, 31.8, 32.1, 32.8, 33.7, 34.3],
+        chartPressure: [320, 380, 450, 550, 650, 760, 850]
+      }
     ];
 
-    let leftTemperatureData = [
-      31.2,
-      31.3,
-      31.1,
-      31.2,
-      31.3,
-      31.2,
-      31.2
-    ];
+    let current = 0;
 
-    let rightTemperatureData = [
-      31.3,
-      31.4,
-      31.5,
-      31.4,
-      31.5,
-      31.4,
-      31.5
-    ];
-
-    let pressureData = [
-      300,
-      320,
-      350,
-      310,
-      330,
-      320,
-      320
-    ];
-
-    /*
-      -------------------------
-      2. 找到 HTML 元素
-      -------------------------
-    */
-
-    const statusBox = document.getElementById("status");
-    const leftTempText = document.getElementById("leftTemp");
-    const rightTempText = document.getElementById("rightTemp");
-    const differenceText = document.getElementById("tempDifference");
-    const pressureText = document.getElementById("maxPressure");
-    const riskScoreText = document.getElementById("riskScore");
-    const abnormalPointsText = document.getElementById("abnormalPoints");
-    const recommendationText = document.getElementById("recommendation");
-
-    const footPoints = [
-      document.getElementById("toe"),
-      document.getElementById("front1"),
-      document.getElementById("front5"),
-      document.getElementById("heel")
-    ];
-
-    /*
-      -------------------------
-      3. 建立溫度圖表
-      -------------------------
-    */
-
-    const temperatureChart = new Chart(
-      document.getElementById("temperatureChart"),
+    const chart = new Chart(
+      document.getElementById("trendChart"),
       {
         type: "line",
 
          {
-          labels: days,
+          labels: [
+            "10/07",
+            "10/08",
+            "10/09",
+            "10/10",
+            "10/11",
+            "10/12",
+            "今天"
+          ],
 
           datasets: [
             {
-              label: "左腳溫度 °C",
-               leftTemperatureData,
-              borderColor: "#087f8c",
-              backgroundColor: "rgba(8, 127, 140, 0.12)",
+              label: "右腳溫度 °C",
+               states[0].chartRight,
+              borderColor: "#e63946",
               borderWidth: 3,
-              pointRadius: 4,
-              pointBackgroundColor: "#087f8c",
               tension: 0.3,
-              fill: false
+              yAxisID: "temperature"
             },
 
             {
-              label: "右腳溫度 °C",
-               rightTemperatureData,
-              borderColor: "#e63946",
-              backgroundColor: "rgba(230, 57, 70, 0.12)",
+              label: "最大壓力",
+               states[0].chartPressure,
+              borderColor: "#f4a261",
               borderWidth: 3,
-              pointRadius: 4,
-              pointBackgroundColor: "#e63946",
               tension: 0.3,
-              fill: false
+              yAxisID: "pressure"
             }
           ]
         },
@@ -788,96 +329,26 @@
           responsive: true,
           maintainAspectRatio: false,
 
-          plugins: {
-            title: {
-              display: true,
-              text: "左右腳溫度歷史趨勢"
-            },
-
-            legend: {
-              position: "top"
-            }
-          },
-
           scales: {
-            y: {
+            temperature: {
+              position: "left",
               title: {
                 display: true,
                 text: "溫度 °C"
               },
-
-              suggestedMin: 29,
-              suggestedMax: 36
+              min: 29,
+              max: 36
             },
 
-            x: {
+            pressure: {
+              position: "right",
               title: {
                 display: true,
-                text: "日期"
-              }
-            }
-          }
-        }
-      }
-    );
-
-    /*
-      -------------------------
-      4. 建立壓力圖表
-      -------------------------
-    */
-
-    const pressureChart = new Chart(
-      document.getElementById("pressureChart"),
-      {
-        type: "line",
-
-         {
-          labels: days,
-
-          datasets: [
-            {
-              label: "最大足底壓力",
-               pressureData,
-              borderColor: "#f4a261",
-              backgroundColor: "rgba(244, 162, 97, 0.18)",
-              borderWidth: 3,
-              pointRadius: 4,
-              pointBackgroundColor: "#f4a261",
-              tension: 0.3,
-              fill: true
-            }
-          ]
-        },
-
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-
-          plugins: {
-            title: {
-              display: true,
-              text: "足底壓力歷史趨勢"
-            },
-
-            legend: {
-              position: "top"
-            }
-          },
-
-          scales: {
-            y: {
+                text: "壓力"
+              },
               beginAtZero: true,
-              title: {
-                display: true,
-                text: "壓力讀數"
-              }
-            },
-
-            x: {
-              title: {
-                display: true,
-                text: "日期"
+              grid: {
+                drawOnChartArea: false
               }
             }
           }
@@ -885,275 +356,57 @@
       }
     );
 
-    /*
-      -------------------------
-      5. 更新圖表
-      -------------------------
-    */
+    function updatePage() {
+      const state = states[current];
 
-    function updateCharts(
-      leftData,
-      rightData,
-      newPressureData
-    ) {
-      temperatureChart.data.datasets[0].data = leftData;
-      temperatureChart.data.datasets[1].data = rightData;
+      status.className = "";
 
-      pressureChart.data.datasets[0].data = newPressureData;
-
-      temperatureChart.update();
-      pressureChart.update();
-    }
-
-    /*
-      -------------------------
-      6. 更新足底感測點顏色
-      -------------------------
-    */
-
-    function updateFootPoints(color) {
-      footPoints.forEach(function(point) {
-        point.style.background = color;
-      });
-    }
-
-    /*
-      -------------------------
-      7. 更新即時數據
-      -------------------------
-    */
-
-    function updateData(
-      leftTemp,
-      rightTemp,
-      pressure,
-      risk,
-      abnormalPoints,
-      recommendation
-    ) {
-      const difference = Math.abs(rightTemp - leftTemp);
-
-      leftTempText.innerText = leftTemp.toFixed(1) + "°C";
-      rightTempText.innerText = rightTemp.toFixed(1) + "°C";
-      differenceText.innerText = difference.toFixed(1) + "°C";
-      pressureText.innerText = pressure;
-      riskScoreText.innerText = risk;
-      abnormalPointsText.innerText = abnormalPoints;
-      recommendationText.innerText = recommendation;
-    }
-
-    /*
-      -------------------------
-      8. 更新風險狀態
-      -------------------------
-    */
-
-    function updateStatus(
-      type,
-      title,
-      subtitle,
-      pointColor
-    ) {
-      statusBox.className = "status";
-
-      if (type === "warning") {
-        statusBox.classList.add("warning");
+      if (state.name === "warning") {
+        status.classList.add("warning");
       }
 
-      if (type === "high") {
-        statusBox.classList.add("high");
+      if (state.name === "danger") {
+        status.classList.add("danger");
       }
 
-      statusBox.innerHTML =
-        title +
-        '<span class="status-subtitle">' +
-        subtitle +
+      status.innerHTML =
+        state.title +
+        '<span class="status-small">' +
+        state.subtitle +
         "</span>";
 
-      updateFootPoints(pointColor);
+      left.innerText = state.left.toFixed(1) + "°C";
+      right.innerText = state.right.toFixed(1) + "°C";
+      difference.innerText =
+        Math.abs(state.right - state.left).toFixed(1) + "°C";
+      pressure.innerText = state.pressure;
+      mode.innerText =
+        state.name === "normal"
+          ? "正常"
+          : state.name === "warning"
+          ? "需留意"
+          : "高風險";
+      tip.innerText = state.tip;
+
+      points.forEach(function(point) {
+        point.style.background = state.color;
+      });
+
+      chart.data.datasets[0].data = state.chartRight;
+      chart.data.datasets[1].data = state.chartPressure;
+      chart.update();
+
+      current++;
+
+      if (current >= states.length) {
+        current = 0;
+      }
     }
 
-    /*
-      -------------------------
-      9. 正常狀態
-      -------------------------
-    */
+    updatePage();
 
-    function setNormal() {
-      const leftData = [
-        31.2,
-        31.3,
-        31.1,
-        31.2,
-        31.3,
-        31.2,
-        31.2
-      ];
-
-      const rightData = [
-        31.3,
-        31.4,
-        31.5,
-        31.4,
-        31.5,
-        31.4,
-        31.5
-      ];
-
-      const newPressureData = [
-        300,
-        320,
-        350,
-        310,
-        330,
-        320,
-        320
-      ];
-
-      updateStatus(
-        "normal",
-        "低風險：數據正常",
-        "建議維持每日足部檢查",
-        "#52b788"
-      );
-
-      updateData(
-        31.2,
-        31.5,
-        320,
-        "低",
-        0,
-        "請繼續每日檢查足部皮膚，並保持足部清潔及乾爽。"
-      );
-
-      updateCharts(
-        leftData,
-        rightData,
-        newPressureData
-      );
-    }
-
-    /*
-      -------------------------
-      10. 異常狀態
-      -------------------------
-    */
-
-    function setWarning() {
-      const leftData = [
-        31.2,
-        31.3,
-        31.4,
-        31.3,
-        31.4,
-        31.4,
-        31.4
-      ];
-
-      const rightData = [
-        31.4,
-        31.5,
-        31.6,
-        31.8,
-        32.2,
-        32.7,
-        33.1
-      ];
-
-      const newPressureData = [
-        320,
-        350,
-        410,
-        450,
-        520,
-        580,
-        655
-      ];
-
-      updateStatus(
-        "warning",
-        "需要留意：建議減壓及檢查足部",
-        "請檢查有沒有紅腫、水泡或破皮",
-        "#f4a261"
-      );
-
-      updateData(
-        31.4,
-        33.1,
-        655,
-        "中",
-        1,
-        "請減少長時間步行，檢查右腳前掌是否有紅腫、水泡或破皮。"
-      );
-
-      updateCharts(
-        leftData,
-        rightData,
-        newPressureData
-      );
-    }
-
-    /*
-      -------------------------
-      11. 高風險狀態
-      -------------------------
-    */
-
-    function setHigh() {
-      const leftData = [
-        31.2,
-        31.3,
-        31.4,
-        31.4,
-        31.5,
-        31.5,
-        31.5
-      ];
-
-      const rightData = [
-        31.4,
-        31.5,
-        31.8,
-        32.1,
-        32.8,
-        33.7,
-        34.3
-      ];
-
-      const newPressureData = [
-        320,
-        380,
-        450,
-        550,
-        650,
-        760,
-        850
-      ];
-
-      updateStatus(
-        "high",
-        "高風險：請停止負重並聯絡醫護人員",
-        "如有傷口、紅腫或滲液，請盡快求醫",
-        "#e63946"
-      );
-
-      updateData(
-        31.5,
-        34.3,
-        850,
-        "高",
-        2,
-        "請停止負重並檢查足部；如有傷口、紅腫、滲液或變色，請盡快聯絡醫護人員。"
-      );
-
-      updateCharts(
-        leftData,
-        rightData,
-        newPressureData
-      );
-    }
+    setInterval(updatePage, 3000);
   </script>
 
 </body>
-
 </html>
