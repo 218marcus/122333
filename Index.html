@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <title>AuraSole Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f5f7;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .card {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 4px 15px #cccccc;
+    }
+
+    #status {
+      padding: 18px;
+      border-radius: 12px;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .normal {
+      background: #b7efc5;
+      color: #176b36;
+    }
+
+    .warning {
+      background: #ffe69c;
+      color: #795600;
+    }
+
+    .high {
+      background: #ffb3b3;
+      color: #8b0000;
+    }
+
+    .foot {
+      position: relative;
+      margin: 20px auto;
+      width: 180px;
+      height: 330px;
+      background: #ead2bd;
+      border-radius: 90px 90px 55px 55px;
+    }
+
+    .point {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #52b788;
+      border: 3px solid white;
+    }
+
+    #toe {
+      top: 35px;
+      left: 75px;
+    }
+
+    #front1 {
+      top: 110px;
+      left: 45px;
+    }
+
+    #front5 {
+      top: 110px;
+      right: 35px;
+    }
+
+    #heel {
+      bottom: 35px;
+      left: 75px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .normalButton {
+      background: #95d5b2;
+    }
+
+    .warningButton {
+      background: #ffd166;
+    }
+
+    .highButton {
+      background: #ef767a;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>AuraSole</h1>
+    <p>糖尿病足日常風險監測原型</p>
+
+    <div id="status" class="normal">
+      低風險：數據正常
+    </div>
+
+    <div class="foot">
+      <div id="toe" class="point"></div>
+      <div id="front1" class="point"></div>
+      <div id="front5" class="point"></div>
+      <div id="heel" class="point"></div>
+    </div>
+
+    <p id="data">
+      左腳溫度：31.2°C<br>
+      右腳溫度：31.5°C<br>
+      最大壓力：320<br>
+      左右溫差：0.3°C
+    </p>
+
+    <button class="normalButton" onclick="setNormal()">
+      正常
+    </button>
+
+    <button class="warningButton" onclick="setWarning()">
+      模擬異常
+    </button>
+
+    <button class="highButton" onclick="setHigh()">
+      模擬高風險
+    </button>
+  </div>
+
+  <script>
+    const statusBox = document.getElementById("status");
+    const dataBox = document.getElementById("data");
+    const points = document.querySelectorAll(".point");
+
+    function setPointColor(color) {
+      points.forEach(point => {
+        point.style.background = color;
+      });
+    }
+
+    function setNormal() {
+      statusBox.className = "normal";
+      statusBox.innerText = "低風險：數據正常";
+      dataBox.innerHTML =
+        "左腳溫度：31.2°C<br>" +
+        "右腳溫度：31.5°C<br>" +
+        "最大壓力：320<br>" +
+        "左右溫差：0.3°C";
+      setPointColor("#52b788");
+    }
+
+    function setWarning() {
+      statusBox.className = "warning";
+      statusBox.innerText = "需要留意：建議減壓及檢查足部";
+      dataBox.innerHTML =
+        "左腳溫度：31.4°C<br>" +
+        "右腳溫度：33.1°C<br>" +
+        "最大壓力：655<br>" +
+        "左右溫差：1.7°C";
+      setPointColor("#f4a261");
+    }
+
+    function setHigh() {
+      statusBox.className = "high";
+      statusBox.innerText = "高風險：請停止負重並聯絡醫護人員";
+      dataBox.innerHTML =
+        "左腳溫度：31.5°C<br>" +
+        "右腳溫度：34.3°C<br>" +
+        "最大壓力：850<br>" +
+        "左右溫差：2.8°C";
+      setPointColor("#e63946");
+    }
+  </script>
+</body>
+</html>
