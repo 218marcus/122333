@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>AuraSole｜Arduino 連接版</title>
+  <title>AuraSole | Diabetic Foot Risk Monitoring</title>
 
   <style>
     * {
@@ -15,7 +15,7 @@
     body {
       margin: 0;
       padding: 18px;
-      font-family: Arial, "Noto Sans TC", sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background: #f2f5f7;
       color: #263238;
     }
@@ -26,7 +26,7 @@
     }
 
     header {
-      padding: 28px;
+      padding: 30px;
       color: white;
       border-radius: 20px;
       background: linear-gradient(135deg, #087f8c, #06a77d);
@@ -35,12 +35,18 @@
 
     header h1 {
       margin: 0 0 8px;
-      font-size: 36px;
+      font-size: 38px;
     }
 
     header p {
       margin: 0;
       line-height: 1.6;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      opacity: 0.9;
     }
 
     .card {
@@ -127,8 +133,8 @@
     }
 
     #resetButton {
-      background: #e5e7eb;
       color: #263238;
+      background: #e5e7eb;
     }
 
     #countdown {
@@ -142,8 +148,15 @@
     #connectionStatus {
       margin: 12px 0 0;
       text-align: center;
-      color: #667085;
       font-size: 14px;
+    }
+
+    .online {
+      color: #176b36;
+    }
+
+    .offline {
+      color: #b42318;
     }
 
     .grid {
@@ -259,14 +272,6 @@
       line-height: 1.7;
     }
 
-    .status-online {
-      color: #176b36 !important;
-    }
-
-    .status-offline {
-      color: #b42318 !important;
-    }
-
     @media (max-width: 650px) {
       body {
         padding: 10px;
@@ -289,38 +294,38 @@
 
     <header>
       <h1>AuraSole</h1>
-      <p>糖尿病足日常風險監測原型</p>
-      <p class="small">
-        第二階段：Arduino USB 即時數據版本
+      <p>Diabetic Foot Daily Risk Monitoring Prototype</p>
+      <p class="subtitle">
+        Phase 2: Arduino USB real-time data connection
       </p>
     </header>
 
     <section class="card">
-      <h2>系統狀態</h2>
+      <h2>System Status</h2>
 
       <div id="status">
-        尚未量測
+        Not measured
         <span class="small">
-          請先連接 Arduino，或直接使用模擬模式
+          Connect Arduino or use simulation mode
         </span>
       </div>
 
       <div class="controls">
         <button id="connectButton">
-          連接 Arduino
+          Connect Arduino
         </button>
 
         <button id="startButton">
-          開始量測
+          Start Measurement
         </button>
 
         <button id="resetButton">
-          重新設定
+          Reset
         </button>
       </div>
 
-      <p id="connectionStatus" class="status-offline">
-        Arduino 尚未連接
+      <p id="connectionStatus" class="offline">
+        Arduino is not connected
       </p>
 
       <div id="countdown"></div>
@@ -338,72 +343,72 @@
           <div id="heel" class="point"></div>
 
           <div id="toeLabel" class="point-label">
-            大拇趾
+            Great Toe
           </div>
 
           <div id="met1Label" class="point-label">
-            第一蹠骨
+            1st Metatarsal
           </div>
 
           <div id="met5Label" class="point-label">
-            第五蹠骨
+            5th Metatarsal
           </div>
 
           <div id="heelLabel" class="point-label">
-            腳跟
+            Heel
           </div>
         </div>
 
         <p class="legend">
-          灰色：未量測<br>
-          綠色：正常<br>
-          黃色：需要留意<br>
-          紅色：高風險
+          Gray: Not measured<br>
+          Green: Normal<br>
+          Yellow: Attention<br>
+          Red: High risk
         </p>
       </section>
 
       <section class="card">
-        <h2>即時數據</h2>
+        <h2>Live Data</h2>
 
         <div class="data">
 
           <div class="data-row">
-            <span>左腳溫度</span>
+            <span>Left Foot Temperature</span>
             <span id="leftTemp" class="data-value">
               --
             </span>
           </div>
 
           <div class="data-row">
-            <span>右腳溫度</span>
+            <span>Right Foot Temperature</span>
             <span id="rightTemp" class="data-value">
               --
             </span>
           </div>
 
           <div class="data-row">
-            <span>左右溫差</span>
+            <span>Temperature Difference</span>
             <span id="tempDifference" class="data-value">
               --
             </span>
           </div>
 
           <div class="data-row">
-            <span>最大壓力</span>
+            <span>Maximum Pressure</span>
             <span id="maxPressure" class="data-value">
               --
             </span>
           </div>
 
           <div class="data-row">
-            <span>數據來源</span>
+            <span>Data Source</span>
             <span id="dataSource" class="data-value">
-              尚未開始
+              Not started
             </span>
           </div>
 
           <div class="data-row">
-            <span>更新時間</span>
+            <span>Last Update</span>
             <span id="lastUpdate" class="data-value">
               --
             </span>
@@ -415,15 +420,16 @@
     </div>
 
     <section class="card">
-      <h2>系統建議</h2>
+      <h2>System Recommendation</h2>
 
       <p id="tip" class="tip">
-        尚未進行量測。
+        No measurement has been taken.
       </p>
 
       <p class="notice">
-        本頁面為概念展示原型。壓力門檻、溫度換算和風險分類
-        尚未經過醫療臨床驗證，不可用作醫療診斷。
+        This page is a concept prototype. Pressure thresholds,
+        temperature conversion, and risk classification have not
+        been clinically validated. It must not be used for diagnosis.
       </p>
     </section>
 
@@ -432,7 +438,7 @@
   <script>
     /*
       =========================
-      1. 取得 HTML 元素
+      1. Get HTML elements
       =========================
     */
 
@@ -484,19 +490,19 @@
 
     /*
       =========================
-      2. 系統變數
+      2. System variables
       =========================
     */
 
     let serialPort = null;
     let serialReader = null;
-    let measuringTimer = null;
+    let measurementTimer = null;
     let secondsLeft = 0;
     let latestArduinoData = null;
 
     /*
       =========================
-      3. 顏色控制
+      3. Change foot point color
       =========================
     */
 
@@ -508,7 +514,7 @@
 
     /*
       =========================
-      4. 連接 Arduino
+      4. Connect Arduino
       =========================
     */
 
@@ -520,17 +526,17 @@
     async function connectArduino() {
       if (!("serial" in navigator)) {
         connectionStatus.innerText =
-          "此瀏覽器不支援 Web Serial，請使用 Chrome 或 Edge。";
+          "Web Serial is not supported. Use Chrome or Edge.";
 
         connectionStatus.className =
-          "status-offline";
+          "offline";
 
         return;
       }
 
       try {
         connectionStatus.innerText =
-          "請選擇 Arduino 序列埠……";
+          "Please select the Arduino serial port...";
 
         serialPort =
           await navigator.serial.requestPort();
@@ -540,10 +546,10 @@
         });
 
         connectionStatus.innerText =
-          "Arduino 已連接，等待數據……";
+          "Arduino connected. Waiting for data...";
 
         connectionStatus.className =
-          "status-online";
+          "online";
 
         dataSourceBox.innerText =
           "Arduino USB";
@@ -555,16 +561,16 @@
 
       } catch (error) {
         connectionStatus.innerText =
-          "連接失敗：" + error.message;
+          "Connection failed: " + error.message;
 
         connectionStatus.className =
-          "status-offline";
+          "offline";
       }
     }
 
     /*
       =========================
-      5. 讀取 Arduino Serial
+      5. Read Arduino Serial data
       =========================
     */
 
@@ -606,16 +612,16 @@
         }
       } catch (error) {
         connectionStatus.innerText =
-          "Arduino 數據讀取中斷";
+          "Arduino data connection interrupted";
 
         connectionStatus.className =
-          "status-offline";
+          "offline";
       }
     }
 
     /*
       =========================
-      6. 解析 Arduino JSON
+      6. Parse Arduino JSON data
       =========================
     */
 
@@ -639,21 +645,22 @@
           data;
 
         connectionStatus.innerText =
-          "Arduino 已連接，正在接收數據";
+          "Arduino connected. Receiving data";
 
         connectionStatus.className =
-          "status-online";
+          "online";
 
-        if (measuringTimer === null) {
-          updateLiveData(
-            data.pressure,
-            data.temperature
-          );
-        }
+        /*
+          Update the live display immediately.
+        */
+        updateLiveData(
+          data.pressure,
+          data.temperature
+        );
 
       } catch (error) {
         console.log(
-          "無法解析 Arduino 數據：",
+          "Unable to parse Arduino ",
           line
         );
       }
@@ -661,7 +668,7 @@
 
     /*
       =========================
-      7. 顯示即時數據
+      7. Update live data
       =========================
     */
 
@@ -669,6 +676,10 @@
       pressure,
       rightTemperature
     ) {
+      /*
+        Demonstration value.
+        Replace this with a real left-foot sensor later.
+      */
       const leftTemperature =
         31.2;
 
@@ -679,13 +690,13 @@
         );
 
       leftTempBox.innerText =
-        leftTemperature.toFixed(1) + "°C";
+        leftTemperature.toFixed(1) + " °C";
 
       rightTempBox.innerText =
-        rightTemperature.toFixed(1) + "°C";
+        rightTemperature.toFixed(1) + " °C";
 
       differenceBox.innerText =
-        difference.toFixed(1) + "°C";
+        difference.toFixed(1) + " °C";
 
       pressureBox.innerText =
         Math.round(pressure);
@@ -695,7 +706,7 @@
 
       lastUpdateBox.innerText =
         new Date().toLocaleTimeString(
-          "zh-HK"
+          "en-HK"
         );
 
       updateRisk(
@@ -707,7 +718,7 @@
 
     /*
       =========================
-      8. 判斷風險
+      8. Risk assessment
       =========================
     */
 
@@ -719,6 +730,10 @@
       let risk =
         "normal";
 
+      /*
+        Demonstration thresholds only.
+        They are not clinical thresholds.
+      */
       if (
         pressure >= 800 ||
         difference >= 2.5
@@ -738,14 +753,14 @@
 
       if (risk === "normal") {
         statusBox.innerHTML = `
-          低風險：數據正常
+          Low Risk: Data Normal
           <span class="small">
-            建議維持每日足部檢查
+            Continue daily foot checks
           </span>
         `;
 
         tipBox.innerText =
-          "請繼續每日檢查足部皮膚，保持足部清潔及乾爽。";
+          "Continue checking your feet every day and keep them clean and dry.";
 
         setPointColor(
           "#52b788"
@@ -757,14 +772,14 @@
           "warning";
 
         statusBox.innerHTML = `
-          需要留意：建議減壓及檢查足部
+          Attention Required
           <span class="small">
-            請檢查有沒有紅腫、水泡或破皮
+            Reduce pressure and inspect your foot
           </span>
         `;
 
         tipBox.innerText =
-          "請減少長時間步行，並檢查右腳前掌有沒有紅腫、水泡或破皮。";
+          "Reduce prolonged walking and check the right forefoot for redness, blisters, or broken skin.";
 
         setPointColor(
           "#f4a261"
@@ -776,14 +791,14 @@
           "danger";
 
         statusBox.innerHTML = `
-          高風險：請停止負重
+          High Risk: Stop Weight-Bearing
           <span class="small">
-            如有傷口或紅腫，請盡快聯絡醫護人員
+            Contact a healthcare professional if redness or a wound is present
           </span>
         `;
 
         tipBox.innerText =
-          "請停止負重並檢查足部；如有傷口、紅腫、滲液或變色，請盡快求醫。";
+          "Stop weight-bearing and inspect your foot. Seek medical advice promptly if there is a wound, redness, discharge, or discoloration.";
 
         setPointColor(
           "#e63946"
@@ -793,7 +808,7 @@
 
     /*
       =========================
-      9. 開始量測
+      9. Start measurement
       =========================
     */
 
@@ -804,7 +819,7 @@
 
     function startMeasurement() {
       clearInterval(
-        measuringTimer
+        measurementTimer
       );
 
       secondsLeft =
@@ -817,32 +832,36 @@
         "measuring";
 
       statusBox.innerHTML = `
-        正在量測
+        Measuring...
         <span class="small">
-          請保持坐姿並避免移動
+          Please sit still and avoid movement
         </span>
       `;
 
       countdownBox.innerText =
-        "剩餘 " + secondsLeft + " 秒";
+        "Time remaining: " +
+        secondsLeft +
+        " seconds";
 
       setPointColor(
         "#087f8c"
       );
 
-      measuringTimer =
+      measurementTimer =
         setInterval(function() {
           secondsLeft--;
 
           countdownBox.innerText =
-            "剩餘 " + secondsLeft + " 秒";
+            "Time remaining: " +
+            secondsLeft +
+            " seconds";
 
           if (secondsLeft <= 0) {
             clearInterval(
-              measuringTimer
+              measurementTimer
             );
 
-            measuringTimer =
+            measurementTimer =
               null;
 
             finishMeasurement();
@@ -852,7 +871,7 @@
 
     /*
       =========================
-      10. 完成量測
+      10. Finish measurement
       =========================
     */
 
@@ -861,7 +880,7 @@
         false;
 
       countdownBox.innerText =
-        "量測完成";
+        "Measurement complete";
 
       if (latestArduinoData !== null) {
         updateLiveData(
@@ -876,8 +895,7 @@
       }
 
       /*
-        如果未連接 Arduino，
-        使用模擬數據完成展示。
+        Simulation mode if Arduino is not connected.
       */
 
       const random =
@@ -907,7 +925,7 @@
       }
 
       dataSourceBox.innerText =
-        "模擬數據";
+        "Simulation";
 
       updateLiveData(
         pressure,
@@ -917,7 +935,7 @@
 
     /*
       =========================
-      11. 重新設定
+      11. Reset
       =========================
     */
 
@@ -928,10 +946,10 @@
 
     function resetPage() {
       clearInterval(
-        measuringTimer
+        measurementTimer
       );
 
-      measuringTimer =
+      measurementTimer =
         null;
 
       secondsLeft =
@@ -947,9 +965,9 @@
         "";
 
       statusBox.innerHTML = `
-        尚未量測
+        Not measured
         <span class="small">
-          請先連接 Arduino，或直接使用模擬模式
+          Connect Arduino or use simulation mode
         </span>
       `;
 
@@ -969,13 +987,13 @@
         "--";
 
       dataSourceBox.innerText =
-        "尚未開始";
+        "Not started";
 
       lastUpdateBox.innerText =
         "--";
 
       tipBox.innerText =
-        "尚未進行量測。";
+        "No measurement has been taken.";
 
       setPointColor(
         "#a8b0b5"
@@ -984,4 +1002,5 @@
   </script>
 
 </body>
+
 </html>
