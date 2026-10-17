@@ -12,7 +12,7 @@
 
     body {
       margin: 0;
-      padding: 20px;
+      padding: 18px;
       font-family: Arial, sans-serif;
       background: #f2f5f7;
       color: #263238;
@@ -24,14 +24,19 @@
     }
 
     header {
-      padding: 28px;
-      border-radius: 20px;
+      padding: 26px;
       color: white;
+      border-radius: 20px;
       background: linear-gradient(135deg, #087f8c, #06a77d);
     }
 
     header h1 {
       margin: 0 0 8px;
+      font-size: 36px;
+    }
+
+    header p {
+      margin: 0;
     }
 
     .card {
@@ -39,7 +44,7 @@
       padding: 22px;
       background: white;
       border-radius: 18px;
-      box-shadow: 0 4px 15px #d8d8d8;
+      box-shadow: 0 4px 14px #d8d8d8;
     }
 
     #status {
@@ -48,7 +53,7 @@
       text-align: center;
       font-size: 21px;
       font-weight: bold;
-      background: #b7efc5;
+      background: #d9f7e5;
       color: #176b36;
     }
 
@@ -64,9 +69,46 @@
 
     .small {
       display: block;
-      margin-top: 7px;
+      margin-top: 8px;
       font-size: 14px;
       font-weight: normal;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 13px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #startButton {
+      color: white;
+      background: #087f8c;
+    }
+
+    #resetButton {
+      background: #e5e7eb;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    #countdown {
+      margin: 18px 0 0;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #087f8c;
     }
 
     .grid {
@@ -87,11 +129,11 @@
 
     .point {
       position: absolute;
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border: 3px solid white;
       border-radius: 50%;
-      background: #52b788;
+      background: #a8b0b5;
       transition: 0.4s;
     }
 
@@ -115,8 +157,37 @@
       left: 57px;
     }
 
+    .point-label {
+      position: absolute;
+      width: 90px;
+      font-size: 11px;
+      text-align: center;
+      color: #604734;
+    }
+
+    #toeLabel {
+      top: 1px;
+      left: 92px;
+    }
+
+    #met1Label {
+      top: 95px;
+      left: -85px;
+    }
+
+    #met5Label {
+      top: 95px;
+      left: 88px;
+    }
+
+    #heelLabel {
+      bottom: 30px;
+      left: 92px;
+    }
+
     .data {
       line-height: 2.2;
+      font-size: 16px;
     }
 
     .data span {
@@ -125,36 +196,15 @@
       color: #087f8c;
     }
 
-    .chart-box {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    #chart {
-      display: block;
-      width: 100%;
-      min-width: 620px;
-      height: 300px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .legend {
-      color: #555;
-      line-height: 2;
-      font-size: 14px;
-    }
-
-    .line-red {
-      color: #e63946;
-    }
-
-    .line-orange {
-      color: #f4a261;
-    }
-
     .tip {
-      color: #555;
       line-height: 1.7;
+      color: #555;
+    }
+
+    .notice {
+      color: #777;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
     @media (max-width: 650px) {
@@ -180,9 +230,23 @@
 
     <section class="card">
       <div id="status">
-        低風險：數據正常
-        <span class="small">建議維持每日足部檢查</span>
+        尚未量測
+        <span class="small">
+          請按下「開始量測」
+        </span>
       </div>
+
+      <div class="controls">
+        <button id="startButton">
+          開始量測
+        </button>
+
+        <button id="resetButton">
+          重新設定
+        </button>
+      </div>
+
+      <div id="countdown"></div>
     </section>
 
     <div class="grid">
@@ -195,271 +259,283 @@
           <div id="met1" class="point"></div>
           <div id="met5" class="point"></div>
           <div id="heel" class="point"></div>
+
+          <div id="toeLabel" class="point-label">
+            大拇趾
+          </div>
+
+          <div id="met1Label" class="point-label">
+            第一蹠骨
+          </div>
+
+          <div id="met5Label" class="point-label">
+            第五蹠骨
+          </div>
+
+          <div id="heelLabel" class="point-label">
+            腳跟
+          </div>
         </div>
 
-        <p class="legend">
-          綠色：正常<br>
-          黃色：需要留意<br>
-          紅色：高風險
+        <p class="notice">
+          灰色：未量測　綠色：正常　黃色：需留意　紅色：高風險
         </p>
       </section>
 
       <section class="card">
-        <h2>即時數據</h2>
+        <h2>量測數據</h2>
 
         <div class="data">
-          左腳溫度：<span id="left">31.2°C</span><br>
-          右腳溫度：<span id="right">31.5°C</span><br>
-          左右溫差：<span id="difference">0.3°C</span><br>
-          最大壓力：<span id="pressure">320</span><br>
-          狀態：<span id="mode">正常</span>
+          左腳溫度：
+          <span id="leftTemp">--</span><br>
+
+          右腳溫度：
+          <span id="rightTemp">--</span><br>
+
+          左右溫差：
+          <span id="tempDifference">--</span><br>
+
+          最大壓力：
+          <span id="maxPressure">--</span><br>
+
+          數據來源：
+          <span id="dataSource">模擬</span>
         </div>
       </section>
 
     </div>
 
     <section class="card">
-      <h2>最近 7 日歷史趨勢</h2>
-
-      <div class="chart-box">
-        <svg id="chart" viewBox="0 0 700 320"></svg>
-      </div>
-
-      <p class="legend">
-        <span class="line-red">━ 右腳溫度</span>
-        <span class="line-orange">━ 最大足底壓力</span>
-      </p>
-    </section>
-
-    <section class="card">
       <h2>系統建議</h2>
+
       <p id="tip" class="tip">
-        請繼續每日檢查足部皮膚，保持足部清潔及乾爽。
+        尚未進行量測。
+      </p>
+
+      <p class="notice">
+        本頁面是展示原型，數據為模擬資料，不構成醫療診斷。
       </p>
     </section>
 
   </main>
 
   <script>
-    const statusBox = document.getElementById("status");
-    const leftBox = document.getElementById("left");
-    const rightBox = document.getElementById("right");
-    const differenceBox = document.getElementById("difference");
-    const pressureBox = document.getElementById("pressure");
-    const modeBox = document.getElementById("mode");
-    const tipBox = document.getElementById("tip");
-    const chart = document.getElementById("chart");
+    const startButton =
+      document.getElementById("startButton");
 
-    const points = document.querySelectorAll(".point");
+    const resetButton =
+      document.getElementById("resetButton");
 
-    const states = [
-      {
-        type: "normal",
-        title: "低風險：數據正常",
-        subtitle: "建議維持每日足部檢查",
-        left: 31.2,
-        right: 31.5,
-        pressure: 320,
-        tip: "請繼續每日檢查足部皮膚，保持足部清潔及乾爽。",
-        color: "#52b788",
-        temperature: [31.3, 31.4, 31.5, 31.4, 31.5, 31.4, 31.5],
-        pressureData: [300, 320, 350, 310, 330, 320, 320]
-      },
+    const statusBox =
+      document.getElementById("status");
 
-      {
-        type: "warning",
-        title: "需要留意：建議減壓及檢查足部",
-        subtitle: "請檢查有沒有紅腫、水泡或破皮",
-        left: 31.4,
-        right: 33.1,
-        pressure: 655,
-        tip: "請減少長時間步行，檢查右腳前掌有沒有紅腫、水泡或破皮。",
-        color: "#f4a261",
-        temperature: [31.4, 31.5, 31.6, 31.8, 32.2, 32.7, 33.1],
-        pressureData: [320, 350, 410, 450, 520, 580, 655]
-      },
+    const countdownBox =
+      document.getElementById("countdown");
 
-      {
-        type: "danger",
-        title: "高風險：請停止負重並聯絡醫護人員",
-        subtitle: "如有傷口、紅腫或滲液，請盡快求醫",
-        left: 31.5,
-        right: 34.3,
-        pressure: 850,
-        tip: "請停止負重並檢查足部；如有傷口、紅腫、滲液或變色，請盡快聯絡醫護人員。",
-        color: "#e63946",
-        temperature: [31.4, 31.5, 31.8, 32.1, 32.8, 33.7, 34.3],
-        pressureData: [320, 380, 450, 550, 650, 760, 850]
-      }
+    const leftTempBox =
+      document.getElementById("leftTemp");
+
+    const rightTempBox =
+      document.getElementById("rightTemp");
+
+    const differenceBox =
+      document.getElementById("tempDifference");
+
+    const pressureBox =
+      document.getElementById("maxPressure");
+
+    const dataSourceBox =
+      document.getElementById("dataSource");
+
+    const tipBox =
+      document.getElementById("tip");
+
+    const points = [
+      document.getElementById("toe"),
+      document.getElementById("met1"),
+      document.getElementById("met5"),
+      document.getElementById("heel")
     ];
 
-    function makePoints(values, min, max) {
-      const chartWidth = 700;
-      const chartHeight = 320;
-      const left = 55;
-      const right = 20;
-      const top = 30;
-      const bottom = 45;
+    let timer = null;
+    let seconds = 0;
 
-      const width = chartWidth - left - right;
-      const height = chartHeight - top - bottom;
-
-      return values.map(function(value, index) {
-        const x = left + index * (width / (values.length - 1));
-        const y = top + (max - value) / (max - min) * height;
-
-        return {
-          x: x,
-          y: y
-        };
+    function setPointColor(color) {
+      points.forEach(function(point) {
+        point.style.background = color;
       });
     }
 
-    function pointsToString(points) {
-      return points
-        .map(function(point) {
-          return point.x + "," + point.y;
-        })
-        .join(" ");
-    }
+    function resetPage() {
+      clearInterval(timer);
 
-    function drawChart(state) {
-      const labels = [
-        "10/07",
-        "10/08",
-        "10/09",
-        "10/10",
-        "10/11",
-        "10/12",
-        "今天"
-      ];
+      seconds = 0;
 
-      const tempPoints = makePoints(
-        state.temperature,
-        29,
-        36
-      );
-
-      const pressurePoints = makePoints(
-        state.pressureData,
-        0,
-        900
-      );
-
-      let html = "";
-
-      html += `
-        <line x1="55" y1="30" x2="55" y2="275"
-          stroke="#999" stroke-width="1" />
-
-        <line x1="55" y1="275" x2="680" y2="275"
-          stroke="#999" stroke-width="1" />
-
-        <text x="10" y="38" font-size="12">36°C</text>
-        <text x="10" y="158" font-size="12">32°C</text>
-        <text x="10" y="278" font-size="12">29°C</text>
-
-        <text x="640" y="38" font-size="12">900</text>
-        <text x="640" y="158" font-size="12">450</text>
-        <text x="640" y="278" font-size="12">0</text>
-
-        <polyline
-          points="${pointsToString(tempPoints)}"
-          fill="none"
-          stroke="#e63946"
-          stroke-width="4"
-        />
-
-        <polyline
-          points="${pointsToString(pressurePoints)}"
-          fill="none"
-          stroke="#f4a261"
-          stroke-width="4"
-        />
-      `;
-
-      tempPoints.forEach(function(point) {
-        html += `
-          <circle
-            cx="${point.x}"
-            cy="${point.y}"
-            r="5"
-            fill="#e63946"
-          />
-        `;
-      });
-
-      pressurePoints.forEach(function(point) {
-        html += `
-          <circle
-            cx="${point.x}"
-            cy="${point.y}"
-            r="5"
-            fill="#f4a261"
-          />
-        `;
-      });
-
-      labels.forEach(function(label, index) {
-        const x = 55 + index * (625 / 6);
-
-        html += `
-          <text
-            x="${x}"
-            y="300"
-            text-anchor="middle"
-            font-size="12"
-          >
-            ${label}
-          </text>
-        `;
-      });
-
-      chart.innerHTML = html;
-    }
-
-    function updatePage() {
-      const state = states[Math.floor(Date.now() / 3000) % states.length];
+      startButton.disabled = false;
+      countdownBox.innerText = "";
 
       statusBox.className = "";
-
-      if (state.type === "warning") {
-        statusBox.classList.add("warning");
-      }
-
-      if (state.type === "danger") {
-        statusBox.classList.add("danger");
-      }
-
       statusBox.innerHTML = `
-        ${state.title}
-        <span class="small">${state.subtitle}</span>
+        尚未量測
+        <span class="small">
+          請按下「開始量測」
+        </span>
       `;
 
-      leftBox.innerText = state.left.toFixed(1) + "°C";
-      rightBox.innerText = state.right.toFixed(1) + "°C";
-      differenceBox.innerText =
-        Math.abs(state.right - state.left).toFixed(1) + "°C";
-      pressureBox.innerText = state.pressure;
+      leftTempBox.innerText = "--";
+      rightTempBox.innerText = "--";
+      differenceBox.innerText = "--";
+      pressureBox.innerText = "--";
+      dataSourceBox.innerText = "模擬";
 
-      modeBox.innerText =
-        state.type === "normal"
-          ? "正常"
-          : state.type === "warning"
-          ? "需留意"
-          : "高風險";
+      tipBox.innerText = "尚未進行量測。";
 
-      tipBox.innerText = state.tip;
-
-      points.forEach(function(point) {
-        point.style.background = state.color;
-      });
-
-      drawChart(state);
+      setPointColor("#a8b0b5");
     }
 
-    updatePage();
-    setInterval(updatePage, 3000);
+    function startMeasurement() {
+      clearInterval(timer);
+
+      seconds = 30;
+      startButton.disabled = true;
+
+      statusBox.className = "";
+      statusBox.innerHTML = `
+        正在量測
+        <span class="small">
+          請保持坐姿並避免移動
+        </span>
+      `;
+
+      setPointColor("#087f8c");
+
+      countdownBox.innerText =
+        "剩餘 " + seconds + " 秒";
+
+      timer = setInterval(function() {
+        seconds--;
+
+        countdownBox.innerText =
+          "剩餘 " + seconds + " 秒";
+
+        if (seconds <= 0) {
+          clearInterval(timer);
+          finishMeasurement();
+        }
+      }, 1000);
+    }
+
+    function finishMeasurement() {
+      /*
+        展示用模擬數據。
+        每次量測會隨機產生一個狀態。
+      */
+
+      const randomNumber = Math.random();
+
+      let leftTemp;
+      let rightTemp;
+      let pressure;
+      let risk;
+
+      if (randomNumber < 0.55) {
+        leftTemp = 31.2;
+        rightTemp = 31.5;
+        pressure = 320;
+        risk = "normal";
+      } else if (randomNumber < 0.85) {
+        leftTemp = 31.4;
+        rightTemp = 33.1;
+        pressure = 655;
+        risk = "warning";
+      } else {
+        leftTemp = 31.5;
+        rightTemp = 34.3;
+        pressure = 850;
+        risk = "danger";
+      }
+
+      const difference =
+        Math.abs(rightTemp - leftTemp);
+
+      leftTempBox.innerText =
+        leftTemp.toFixed(1) + "°C";
+
+      rightTempBox.innerText =
+        rightTemp.toFixed(1) + "°C";
+
+      differenceBox.innerText =
+        difference.toFixed(1) + "°C";
+
+      pressureBox.innerText = pressure;
+
+      dataSourceBox.innerText = "模擬";
+
+      if (risk === "normal") {
+        statusBox.className = "";
+
+        statusBox.innerHTML = `
+          低風險：數據正常
+          <span class="small">
+            建議維持每日足部檢查
+          </span>
+        `;
+
+        tipBox.innerText =
+          "請繼續每日檢查足部皮膚，保持足部清潔及乾爽。";
+
+        setPointColor("#52b788");
+      }
+
+      if (risk === "warning") {
+        statusBox.className = "warning";
+
+        statusBox.innerHTML = `
+          需要留意：建議減壓及檢查足部
+          <span class="small">
+            請檢查紅腫、水泡或破皮
+          </span>
+        `;
+
+        tipBox.innerText =
+          "請減少長時間步行，檢查右腳前掌有沒有紅腫、水泡或破皮。";
+
+        setPointColor("#f4a261");
+      }
+
+      if (risk === "danger") {
+        statusBox.className = "danger";
+
+        statusBox.innerHTML = `
+          高風險：請停止負重
+          <span class="small">
+            如有傷口或紅腫，請盡快聯絡醫護人員
+          </span>
+        `;
+
+        tipBox.innerText =
+          "請停止負重並檢查足部；如有傷口、紅腫、滲液或變色，請盡快求醫。";
+
+        setPointColor("#e63946");
+      }
+
+      countdownBox.innerText =
+        "量測完成";
+
+      startButton.disabled = false;
+    }
+
+    startButton.addEventListener(
+      "click",
+      startMeasurement
+    );
+
+    resetButton.addEventListener(
+      "click",
+      resetPage
+    );
+
+    resetPage();
   </script>
 
 </body>
