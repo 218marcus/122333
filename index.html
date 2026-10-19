@@ -6,351 +6,84 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-  <title>AuraSole Dashboard</title>
+  <title>Line Chart Test</title>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
-      padding: 18px;
+      padding: 20px;
       font-family: Arial, sans-serif;
       background: #f2f5f7;
-      color: #263238;
     }
 
-    .app {
-      max-width: 950px;
-      margin: auto;
-    }
-
-    header {
-      padding: 28px;
-      color: white;
-      border-radius: 20px;
-      background: linear-gradient(
-        135deg,
-        #087f8c,
-        #06a77d
-      );
-    }
-
-    header h1 {
-      margin: 0 0 8px;
-      font-size: 36px;
-    }
-
-    header p {
-      margin: 0;
-      line-height: 1.6;
-    }
-
-    .card {
-      margin-top: 18px;
-      padding: 22px;
-      background: white;
-      border-radius: 18px;
-      box-shadow: 0 4px 14px #d8d8d8;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #087f8c;
-    }
-
-    #status {
-      padding: 18px;
-      border-radius: 14px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      background: #d9f7e5;
-      color: #176b36;
-    }
-
-    .small {
-      display: block;
-      margin-top: 8px;
-      font-size: 14px;
-      font-weight: normal;
-    }
-
-    .chart-container {
-      position: relative;
+    .chart-box {
       width: 100%;
-      height: 360px;
-    }
-
-    .data-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .data-box {
-      padding: 15px;
-      text-align: center;
-      border-radius: 12px;
-      background: #f1f8f8;
-    }
-
-    .data-label {
-      color: #667085;
-      font-size: 13px;
-    }
-
-    .data-value {
-      margin-top: 8px;
-      color: #087f8c;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    button {
-      padding: 12px 16px;
-      border: none;
-      border-radius: 9px;
-      color: white;
-      background: #087f8c;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #056570;
-    }
-
-    #clearButton {
-      background: #6c757d;
-    }
-
-    .notice {
-      color: #667085;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    @media (max-width: 700px) {
-      .data-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .chart-container {
-        height: 300px;
-      }
-
-      header h1 {
-        font-size: 30px;
-      }
+      max-width: 800px;
+      height: 400px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
     }
   </style>
 </head>
 
 <body>
 
-  <main class="app">
+  <h1>Pressure Trend Test</h1>
 
-    <header>
-      <h1>AuraSole</h1>
-      <p>
-        Diabetic Foot Daily Risk Monitoring
-      </p>
-      <p class="small">
-        Line Chart Prototype
-      </p>
-    </header>
-
-    <section class="card">
-      <h2>System Status</h2>
-
-      <div id="status">
-        Simulation mode
-        <span class="small">
-          New data will be added automatically
-        </span>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Current Data</h2>
-
-      <div class="data-grid">
-
-        <div class="data-box">
-          <div class="data-label">
-            Pressure
-          </div>
-
-          <div id="pressureValue"
-               class="data-value">
-            --
-          </div>
-        </div>
-
-        <div class="data-box">
-          <div class="data-label">
-            Temperature
-          </div>
-
-          <div id="temperatureValue"
-               class="data-value">
-            --
-          </div>
-        </div>
-
-        <div class="data-box">
-          <div class="data-label">
-            Temperature Difference
-          </div>
-
-          <div id="differenceValue"
-               class="data-value">
-            --
-          </div>
-        </div>
-
-        <div class="data-box">
-          <div class="data-label">
-            Data Points
-          </div>
-
-          <div id="pointsValue"
-               class="data-value">
-            0
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Pressure and Temperature Trend</h2>
-
-      <div class="chart-container">
-        <canvas id="trendChart"></canvas>
-      </div>
-
-      <div class="button-row">
-        <button id="addButton">
-          Add Test Data
-        </button>
-
-        <button id="clearButton">
-          Clear Chart
-        </button>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Recommendation</h2>
-
-      <p id="recommendation">
-        Waiting for data.
-      </p>
-
-      <p class="notice">
-        This is a prototype. Thresholds and
-        temperature conversion are not clinically
-        validated and must not be used for diagnosis.
-      </p>
-    </section>
-
-  </main>
+  <div class="chart-box">
+    <canvas id="pressureChart"></canvas>
+  </div>
 
   <script>
-    /*
-      =========================
-      1. Chart data
-      =========================
-    */
+    const canvas =
+      document.getElementById(
+        "pressureChart"
+      );
 
-    const labels = [];
-    const pressureData = [];
-    const temperatureData = [];
-
-    /*
-      =========================
-      2. Get HTML elements
-      =========================
-    */
-
-    const statusBox =
-      document.getElementById("status");
-
-    const pressureValue =
-      document.getElementById("pressureValue");
-
-    const temperatureValue =
-      document.getElementById("temperatureValue");
-
-    const differenceValue =
-      document.getElementById("differenceValue");
-
-    const pointsValue =
-      document.getElementById("pointsValue");
-
-    const recommendation =
-      document.getElementById("recommendation");
-
-    const addButton =
-      document.getElementById("addButton");
-
-    const clearButton =
-      document.getElementById("clearButton");
-
-    /*
-      =========================
-      3. Create line chart
-      =========================
-    */
-
-    const chartContext =
-      document
-        .getElementById("trendChart")
-        .getContext("2d");
-
-    const trendChart =
+    if (typeof Chart === "undefined") {
+      document.body.innerHTML += `
+        <p style="color:red;">
+          Chart.js failed to load.
+        </p>
+      `;
+    } else {
       new Chart(
-        chartContext,
+        canvas,
         {
           type: "line",
 
            {
-            labels: labels,
+            labels: [
+              "09:00",
+              "09:01",
+              "09:02",
+              "09:03",
+              "09:04",
+              "09:05"
+            ],
 
             datasets: [
               {
                 label: "Pressure",
-                 pressureData,
-                borderColor: "#e63946",
-                backgroundColor: "rgba(230, 57, 70, 0.15)",
-                borderWidth: 3,
-                pointRadius: 4,
-                tension: 0.3,
-                yAxisID: "pressureAxis"
-              },
-
-              {
-                label: "Temperature",
-                 temperatureData,
+                 [
+                  250,
+                  380,
+                  420,
+                  610,
+                  520,
+                  700
+                ],
                 borderColor: "#087f8c",
-                backgroundColor: "rgba(8, 127, 140, 0.15)",
+                backgroundColor:
+                  "rgba(8, 127, 140, 0.15)",
                 borderWidth: 3,
-                pointRadius: 4,
+                pointRadius: 5,
                 tension: 0.3,
-                yAxisID: "temperatureAxis"
+                fill: true
               }
             ]
           },
@@ -359,33 +92,8 @@
             responsive: true,
             maintainAspectRatio: false,
 
-            interaction: {
-              mode: "index",
-              intersect: false
-            },
-
-            plugins: {
-              legend: {
-                display: true,
-                position: "top"
-              },
-
-              tooltip: {
-                enabled: true
-              }
-            },
-
             scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: "Time"
-                }
-              },
-
-              pressureAxis: {
-                type: "linear",
-                position: "left",
+              y: {
                 beginAtZero: true,
                 title: {
                   display: true,
@@ -393,270 +101,15 @@
                 }
               },
 
-              temperatureAxis: {
-                type: "linear",
-                position: "right",
-                beginAtZero: false,
-                grid: {
-                  drawOnChartArea: false
-                },
+              x: {
                 title: {
                   display: true,
-                  text: "Temperature (°C)"
+                  text: "Time"
                 }
               }
             }
           }
         }
-      );
-
-    /*
-      =========================
-      4. Generate test data
-      =========================
-    */
-
-    function generateTestData() {
-      const now =
-        new Date();
-
-      const time =
-        now.toLocaleTimeString(
-          "en-HK",
-          {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-          }
-        );
-
-      const pressure =
-        Math.floor(
-          250 +
-          Math.random() * 650
-        );
-
-      const temperature =
-        Number(
-          (
-            30.0 +
-            Math.random() * 5.0
-          ).toFixed(1)
-        );
-
-      return {
-        time: time,
-        pressure: pressure,
-        temperature: temperature
-      };
-    }
-
-    /*
-      =========================
-      5. Add data to chart
-      =========================
-    */
-
-    function addDataPoint(data) {
-      labels.push(data.time);
-
-      pressureData.push(
-        data.pressure
-      );
-
-      temperatureData.push(
-        data.temperature
-      );
-
-      /*
-        Keep only the latest 20 points.
-      */
-      if (labels.length > 20) {
-        labels.shift();
-        pressureData.shift();
-        temperatureData.shift();
-      }
-
-      trendChart.update();
-
-      updateCurrentData(
-        data.pressure,
-        data.temperature
-      );
-    }
-
-    /*
-      =========================
-      6. Update current values
-      =========================
-    */
-
-    function updateCurrentData(
-      pressure,
-      temperature
-    ) {
-      const leftTemperature =
-        31.2;
-
-      const difference =
-        Math.abs(
-          temperature -
-          leftTemperature
-        );
-
-      pressureValue.innerText =
-        Math.round(pressure);
-
-      temperatureValue.innerText =
-        temperature.toFixed(1) +
-        " °C";
-
-      differenceValue.innerText =
-        difference.toFixed(1) +
-        " °C";
-
-      pointsValue.innerText =
-        labels.length;
-
-      updateRisk(
-        pressure,
-        difference
-      );
-    }
-
-    /*
-      =========================
-      7. Update risk status
-      =========================
-    */
-
-    function updateRisk(
-      pressure,
-      difference
-    ) {
-      if (
-        pressure >= 800 ||
-        difference >= 2.5
-      ) {
-        statusBox.style.background =
-          "#ffb3b3";
-
-        statusBox.style.color =
-          "#8b0000";
-
-        statusBox.innerHTML = `
-          High Risk
-          <span class="small">
-            Please inspect the foot
-          </span>
-        `;
-
-        recommendation.innerText =
-          "Stop weight-bearing and inspect the foot. Seek medical advice promptly if there is a wound, redness, discharge, or discoloration.";
-
-      } else if (
-        pressure >= 600 ||
-        difference >= 1.5
-      ) {
-        statusBox.style.background =
-          "#ffe69c";
-
-        statusBox.style.color =
-          "#795600";
-
-        statusBox.innerHTML = `
-          Attention Required
-          <span class="small">
-            Reduce pressure and inspect the foot
-          </span>
-        `;
-
-        recommendation.innerText =
-          "Reduce prolonged walking and inspect the foot for redness, blisters, or broken skin.";
-
-      } else {
-        statusBox.style.background =
-          "#d9f7e5";
-
-        statusBox.style.color =
-          "#176b36";
-
-        statusBox.innerHTML = `
-          Low Risk: Data Normal
-          <span class="small">
-            Continue daily foot checks
-          </span>
-        `;
-
-        recommendation.innerText =
-          "Continue checking your feet every day and keep them clean and dry.";
-      }
-    }
-
-    /*
-      =========================
-      8. Button events
-      =========================
-    */
-
-    addButton.addEventListener(
-      "click",
-      function() {
-        const data =
-          generateTestData();
-
-        addDataPoint(data);
-      }
-    );
-
-    clearButton.addEventListener(
-      "click",
-      function() {
-        labels.length = 0;
-        pressureData.length = 0;
-        temperatureData.length = 0;
-
-        trendChart.update();
-
-        pressureValue.innerText =
-          "--";
-
-        temperatureValue.innerText =
-          "--";
-
-        differenceValue.innerText =
-          "--";
-
-        pointsValue.innerText =
-          "0";
-
-        statusBox.style.background =
-          "#d9f7e5";
-
-        statusBox.style.color =
-          "#176b36";
-
-        statusBox.innerHTML = `
-          Simulation mode
-          <span class="small">
-            New data will be added automatically
-          </span>
-        `;
-
-        recommendation.innerText =
-          "Waiting for data.";
-      }
-    );
-
-    /*
-      =========================
-      9. Add sample points
-      =========================
-    */
-
-    for (let i = 0; i < 6; i++) {
-      addDataPoint(
-        generateTestData()
       );
     }
   </script>
