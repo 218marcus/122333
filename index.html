@@ -24,7 +24,7 @@
     }
 
     .app {
-      max-width: 850px;
+      max-width: 950px;
       margin: auto;
     }
 
@@ -136,6 +136,33 @@
       left: 57px;
     }
 
+    .live-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .live-box {
+      padding: 12px;
+      border-radius: 10px;
+      background: #f1f8f8;
+    }
+
+    .live-label {
+      display: block;
+      color: #667085;
+      font-size: 13px;
+    }
+
+    .live-value {
+      display: block;
+      margin-top: 5px;
+      color: #087f8c;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
     .data {
       line-height: 2.2;
     }
@@ -154,8 +181,8 @@
     #chart {
       display: block;
       width: 100%;
-      min-width: 620px;
-      height: 300px;
+      min-width: 720px;
+      height: 360px;
       border-bottom: 1px solid #ddd;
     }
 
@@ -165,12 +192,30 @@
       font-size: 14px;
     }
 
-    .line-red {
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .legend-item {
+      font-weight: bold;
+    }
+
+    .toe-color {
       color: #e63946;
     }
 
-    .line-orange {
+    .met1-color {
+      color: #087f8c;
+    }
+
+    .met5-color {
       color: #f4a261;
+    }
+
+    .heel-color {
+      color: #8e6c88;
     }
 
     .tip {
@@ -197,9 +242,13 @@
         grid-template-columns: 1fr;
       }
 
+      .live-grid {
+        grid-template-columns: 1fr;
+      }
+
       #chart {
-        min-width: 620px;
-        height: 280px;
+        min-width: 720px;
+        height: 340px;
       }
     }
   </style>
@@ -228,8 +277,8 @@
       </div>
 
       <div class="simulation-note">
-        Simulation mode: normal readings appear most of the time,
-        with slightly different values generated at every update.
+        Simulation mode: four foot locations are updated
+        every five seconds with different real-time readings.
       </div>
 
     </section>
@@ -257,31 +306,67 @@
 
       <section class="card">
 
-        <h2>Live Data</h2>
+        <h2>Live Readings</h2>
+
+        <div class="live-grid">
+
+          <div class="live-box">
+            <span class="live-label">
+              Great Toe
+            </span>
+
+            <span id="toeValue"
+                  class="live-value">
+              --
+            </span>
+          </div>
+
+          <div class="live-box">
+            <span class="live-label">
+              1st Metatarsal
+            </span>
+
+            <span id="met1Value"
+                  class="live-value">
+              --
+            </span>
+          </div>
+
+          <div class="live-box">
+            <span class="live-label">
+              5th Metatarsal
+            </span>
+
+            <span id="met5Value"
+                  class="live-value">
+              --
+            </span>
+          </div>
+
+          <div class="live-box">
+            <span class="live-label">
+              Heel
+            </span>
+
+            <span id="heelValue"
+                  class="live-value">
+              --
+            </span>
+          </div>
+
+        </div>
 
         <div class="data">
 
-          Left Foot Temperature:
-          <span id="left">
-            31.2°C
+          Average Pressure:
+          <span id="averagePressure">
+            --
           </span>
           <br>
 
-          Right Foot Temperature:
-          <span id="right">
-            31.5°C
-          </span>
-          <br>
-
-          Temperature Difference:
-          <span id="difference">
-            0.3°C
-          </span>
-          <br>
-
-          Maximum Pressure:
-          <span id="pressure">
-            320
+          Highest Pressure:
+          <span id="highestPressure">
+            --
           </span>
           <br>
 
@@ -298,29 +383,37 @@
 
     <section class="card">
 
-      <h2>Recent 7 Readings Trend</h2>
+      <h2>Real-Time Pressure Trend</h2>
 
       <div class="chart-box">
 
         <svg
           id="chart"
-          viewBox="0 0 700 320"
+          viewBox="0 0 720 360"
           preserveAspectRatio="none">
         </svg>
 
       </div>
 
-      <p class="legend">
+      <div class="legend-row">
 
-        <span class="line-red">
-          ━ Right Foot Temperature
+        <span class="legend-item toe-color">
+          ● Great Toe
         </span>
 
-        <span class="line-orange">
-          ━ Maximum Plantar Pressure
+        <span class="legend-item met1-color">
+          ● 1st Metatarsal
         </span>
 
-      </p>
+        <span class="legend-item met5-color">
+          ● 5th Metatarsal
+        </span>
+
+        <span class="legend-item heel-color">
+          ● Heel
+        </span>
+
+      </div>
 
     </section>
 
@@ -341,17 +434,23 @@
     const statusBox =
       document.getElementById("status");
 
-    const leftBox =
-      document.getElementById("left");
+    const toeValue =
+      document.getElementById("toeValue");
 
-    const rightBox =
-      document.getElementById("right");
+    const met1Value =
+      document.getElementById("met1Value");
 
-    const differenceBox =
-      document.getElementById("difference");
+    const met5Value =
+      document.getElementById("met5Value");
 
-    const pressureBox =
-      document.getElementById("pressure");
+    const heelValue =
+      document.getElementById("heelValue");
+
+    const averagePressure =
+      document.getElementById("averagePressure");
+
+    const highestPressure =
+      document.getElementById("highestPressure");
 
     const modeBox =
       document.getElementById("mode");
@@ -362,38 +461,19 @@
     const chart =
       document.getElementById("chart");
 
-    const points =
+    const mapPoints =
       document.querySelectorAll(".point");
 
-    /*
-      Store the latest seven readings.
-    */
     const history =
       [];
 
-    /*
-      Generate a random decimal value
-      within a specified range.
-    */
-    function randomDecimal(
-      min,
-      max,
-      digits
-    ) {
-      const value =
-        min +
-        Math.random() *
-        (max - min);
+    const lineColors = {
+      toe: "#e63946",
+      met1: "#087f8c",
+      met5: "#f4a261",
+      heel: "#8e6c88"
+    };
 
-      return Number(
-        value.toFixed(digits)
-      );
-    }
-
-    /*
-      Generate a random integer
-      within a specified range.
-    */
     function randomInteger(
       min,
       max
@@ -405,55 +485,35 @@
       );
     }
 
-    /*
-      Generate different normal data.
-
-      The values remain within a stable
-      and reasonable prototype range.
-    */
     function createNormalData() {
-      const left =
-        randomDecimal(
-          30.8,
-          31.8,
-          1
-        );
-
-      const temperatureDifference =
-        randomDecimal(
-          0.1,
-          0.8,
-          1
-        );
-
-      const right =
-        Number(
-          (
-            left +
-            temperatureDifference
-          ).toFixed(1)
-        );
-
-      const pressure =
-        randomInteger(
-          260,
-          420
-        );
-
       return {
         type: "normal",
+
+        toe: randomInteger(
+          260,
+          390
+        ),
+
+        met1: randomInteger(
+          280,
+          430
+        ),
+
+        met5: randomInteger(
+          250,
+          400
+        ),
+
+        heel: randomInteger(
+          220,
+          360
+        ),
 
         title:
           "Low Risk: Data Normal",
 
         subtitle:
           "Continue daily foot checks",
-
-        left: left,
-
-        right: right,
-
-        pressure: pressure,
 
         tip:
           "Continue checking your feet every day and keep them clean and dry.",
@@ -463,32 +523,29 @@
       };
     }
 
-    /*
-      Warning data appears occasionally.
-    */
     function createWarningData() {
-      const left =
-        randomDecimal(
-          31.2,
-          31.8,
-          1
-        );
-
-      const right =
-        randomDecimal(
-          32.3,
-          33.0,
-          1
-        );
-
-      const pressure =
-        randomInteger(
-          580,
-          700
-        );
-
       return {
         type: "warning",
+
+        toe: randomInteger(
+          450,
+          600
+        ),
+
+        met1: randomInteger(
+          570,
+          700
+        ),
+
+        met5: randomInteger(
+          480,
+          620
+        ),
+
+        heel: randomInteger(
+          420,
+          560
+        ),
 
         title:
           "Attention Required",
@@ -496,58 +553,43 @@
         subtitle:
           "Inspect for redness, blisters, or broken skin",
 
-        left: left,
-
-        right: right,
-
-        pressure: pressure,
-
         tip:
-          "Reduce prolonged walking and inspect the front of the foot for redness, blisters, or broken skin.",
+          "Reduce prolonged walking and inspect the foot for redness, blisters, or broken skin.",
 
         color:
           "#f4a261"
       };
     }
 
-    /*
-      Danger data appears very rarely.
-    */
     function createDangerData() {
-      const left =
-        randomDecimal(
-          31.3,
-          31.8,
-          1
-        );
-
-      const right =
-        randomDecimal(
-          33.5,
-          34.5,
-          1
-        );
-
-      const pressure =
-        randomInteger(
-          780,
-          880
-        );
-
       return {
         type: "danger",
+
+        toe: randomInteger(
+          700,
+          820
+        ),
+
+        met1: randomInteger(
+          800,
+          900
+        ),
+
+        met5: randomInteger(
+          720,
+          850
+        ),
+
+        heel: randomInteger(
+          650,
+          780
+        ),
 
         title:
           "High Risk: Stop Weight-Bearing",
 
         subtitle:
           "Seek medical advice promptly if a wound or redness is present",
-
-        left: left,
-
-        right: right,
-
-        pressure: pressure,
 
         tip:
           "Stop weight-bearing and inspect your foot. Seek medical advice promptly if there is a wound, redness, discharge, or discoloration.",
@@ -590,46 +632,46 @@
             "en-HK",
             {
               hour: "2-digit",
-              minute: "2-digit"
+              minute: "2-digit",
+              second: "2-digit"
             }
           ),
 
-        temperature:
-          data.right,
-
-        pressure:
-          data.pressure
+        toe: data.toe,
+        met1: data.met1,
+        met5: data.met5,
+        heel: data.heel
       });
 
       if (
-        history.length > 7
+        history.length > 12
       ) {
         history.shift();
       }
     }
 
-    function makePoints(
+    function getChartPoints(
       values,
       min,
       max
     ) {
       const chartWidth =
-        700;
+        720;
 
       const chartHeight =
-        320;
+        360;
 
       const left =
-        55;
+        65;
 
       const right =
-        20;
+        25;
 
       const top =
         30;
 
       const bottom =
-        45;
+        55;
 
       const width =
         chartWidth -
@@ -708,30 +750,58 @@
           }
         );
 
-      const temperatureValues =
+      const toeValues =
         history.map(
           function(item) {
-            return item.temperature;
+            return item.toe;
           }
         );
 
-      const pressureValues =
+      const met1Values =
         history.map(
           function(item) {
-            return item.pressure;
+            return item.met1;
           }
         );
 
-      const tempPoints =
-        makePoints(
-          temperatureValues,
-          29,
-          36
+      const met5Values =
+        history.map(
+          function(item) {
+            return item.met5;
+          }
         );
 
-      const pressurePoints =
-        makePoints(
-          pressureValues,
+      const heelValues =
+        history.map(
+          function(item) {
+            return item.heel;
+          }
+        );
+
+      const toePoints =
+        getChartPoints(
+          toeValues,
+          0,
+          900
+        );
+
+      const met1Points =
+        getChartPoints(
+          met1Values,
+          0,
+          900
+        );
+
+      const met5Points =
+        getChartPoints(
+          met5Values,
+          0,
+          900
+        );
+
+      const heelPoints =
+        getChartPoints(
+          heelValues,
           0,
           900
         );
@@ -741,121 +811,122 @@
 
       html += `
         <line
-          x1="55"
+          x1="65"
           y1="30"
-          x2="55"
-          y2="275"
+          x2="65"
+          y2="305"
           stroke="#999"
           stroke-width="1"
         />
 
         <line
-          x1="55"
-          y1="275"
-          x2="680"
-          y2="275"
+          x1="65"
+          y1="305"
+          x2="695"
+          y2="305"
           stroke="#999"
           stroke-width="1"
         />
 
-        <text
-          x="10"
-          y="38"
-          font-size="12">
-          36°C
-        </text>
+        <line
+          x1="65"
+          y1="213"
+          x2="695"
+          y2="213"
+          stroke="#eeeeee"
+          stroke-width="1"
+        />
 
-        <text
-          x="10"
-          y="158"
-          font-size="12">
-          32°C
-        </text>
+        <line
+          x1="65"
+          y1="121"
+          x2="695"
+          y2="121"
+          stroke="#eeeeee"
+          stroke-width="1"
+        />
 
-        <text
-          x="10"
-          y="278"
-          font-size="12">
-          29°C
-        </text>
+        <line
+          x1="65"
+          y1="30"
+          x2="695"
+          y2="30"
+          stroke="#eeeeee"
+          stroke-width="1"
+        />
 
-        <text
-          x="640"
-          y="38"
-          font-size="12">
+        <text x="18" y="35" font-size="12">
           900
         </text>
 
-        <text
-          x="640"
-          y="158"
-          font-size="12">
-          450
+        <text x="18" y="126" font-size="12">
+          600
         </text>
 
-        <text
-          x="640"
-          y="278"
-          font-size="12">
+        <text x="18" y="218" font-size="12">
+          300
+        </text>
+
+        <text x="28" y="310" font-size="12">
           0
         </text>
       `;
 
-      if (
-        tempPoints.length > 0
-      ) {
-        html += `
-          <polyline
-            points="${pointsToString(tempPoints)}"
-            fill="none"
-            stroke="#e63946"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        `;
+      const lines = [
+        {
+          points: toePoints,
+          color: lineColors.toe
+        },
 
-        tempPoints.forEach(
-          function(point) {
-            html += `
-              <circle
-                cx="${point.x}"
-                cy="${point.y}"
-                r="4"
-                fill="#e63946"
-              />
-            `;
+        {
+          points: met1Points,
+          color: lineColors.met1
+        },
+
+        {
+          points: met5Points,
+          color: lineColors.met5
+        },
+
+        {
+          points: heelPoints,
+          color: lineColors.heel
+        }
+      ];
+
+      lines.forEach(
+        function(line) {
+          if (
+            line.points.length === 0
+          ) {
+            return;
           }
-        );
-      }
 
-      if (
-        pressurePoints.length > 0
-      ) {
-        html += `
-          <polyline
-            points="${pointsToString(pressurePoints)}"
-            fill="none"
-            stroke="#f4a261"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        `;
+          html += `
+            <polyline
+              points="${pointsToString(line.points)}"
+              fill="none"
+              stroke="${line.color}"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          `;
 
-        pressurePoints.forEach(
-          function(point) {
-            html += `
-              <circle
-                cx="${point.x}"
-                cy="${point.y}"
-                r="4"
-                fill="#f4a261"
-              />
-            `;
-          }
-        );
-      }
+          line.points.forEach(
+            function(point) {
+              html += `
+                <circle
+                  cx="${point.x}"
+                  cy="${point.y}"
+                  r="4"
+                  fill="${line.color}"
+                />
+              `;
+            }
+          );
+        }
+      );
 
       labels.forEach(
         function(label, index) {
@@ -864,13 +935,13 @@
           if (
             labels.length === 1
           ) {
-            x = 55;
+            x = 65;
           } else {
             x =
-              55 +
+              65 +
               index *
               (
-                625 /
+                630 /
                 (labels.length - 1)
               );
           }
@@ -878,9 +949,9 @@
           html += `
             <text
               x="${x}"
-              y="300"
+              y="335"
               text-anchor="middle"
-              font-size="12">
+              font-size="11">
               ${label}
             </text>
           `;
@@ -889,6 +960,17 @@
 
       chart.innerHTML =
         html;
+    }
+
+    function updateRiskMap(
+      data
+    ) {
+      mapPoints.forEach(
+        function(point) {
+          point.style.background =
+            data.color;
+        }
+      );
     }
 
     function updatePage(
@@ -921,23 +1003,48 @@
         </span>
       `;
 
-      leftBox.innerText =
-        data.left.toFixed(1) +
-        "°C";
+      toeValue.innerText =
+        data.toe;
 
-      rightBox.innerText =
-        data.right.toFixed(1) +
-        "°C";
+      met1Value.innerText =
+        data.met1;
 
-      differenceBox.innerText =
-        Math.abs(
-          data.right -
-          data.left
-        ).toFixed(1) +
-        "°C";
+      met5Value.innerText =
+        data.met5;
 
-      pressureBox.innerText =
-        data.pressure;
+      heelValue.innerText =
+        data.heel;
+
+      const values = [
+        data.toe,
+        data.met1,
+        data.met5,
+        data.heel
+      ];
+
+      const total =
+        values.reduce(
+          function(sum, value) {
+            return sum + value;
+          },
+          0
+        );
+
+      const average =
+        Math.round(
+          total / values.length
+        );
+
+      const highest =
+        Math.max(
+          ...values
+        );
+
+      averagePressure.innerText =
+        average;
+
+      highestPressure.innerText =
+        highest;
 
       modeBox.innerText =
         data.type === "normal"
@@ -949,11 +1056,8 @@
       tipBox.innerText =
         data.tip;
 
-      points.forEach(
-        function(point) {
-          point.style.background =
-            data.color;
-        }
+      updateRiskMap(
+        data
       );
 
       addHistoryData(
@@ -963,9 +1067,6 @@
       drawChart();
     }
 
-    /*
-      Start with normal data.
-    */
     const firstData =
       createNormalData();
 
@@ -973,9 +1074,6 @@
       firstData
     );
 
-    /*
-      Generate new data every 5 seconds.
-    */
     setInterval(
       function() {
         const newData =
