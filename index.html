@@ -41,6 +41,7 @@
 
     header h1 {
       margin: 0 0 8px;
+      font-size: 34px;
     }
 
     header p {
@@ -150,13 +151,14 @@
     }
 
     /*
-      The chart is now shorter.
+      The chart box keeps the original height.
+      The data trend is adjusted instead.
     */
     #chart {
       display: block;
       width: 100%;
       min-width: 620px;
-      height: 190px;
+      height: 300px;
       border-bottom: 1px solid #ddd;
     }
 
@@ -189,7 +191,8 @@
       }
 
       #chart {
-        height: 180px;
+        min-width: 620px;
+        height: 280px;
       }
     }
   </style>
@@ -289,7 +292,7 @@
 
         <svg
           id="chart"
-          viewBox="0 0 700 220"
+          viewBox="0 0 700 320"
           preserveAspectRatio="none">
         </svg>
 
@@ -350,6 +353,10 @@
     const points =
       document.querySelectorAll(".point");
 
+    /*
+      The simulated data is intentionally smoother.
+      Adjacent values change gradually.
+    */
     const states = [
 
       {
@@ -376,20 +383,20 @@
         temperature: [
           31.3,
           31.4,
-          31.5,
           31.4,
           31.5,
-          31.4,
+          31.5,
+          31.6,
           31.5
         ],
 
         pressureData: [
           300,
-          320,
-          350,
           310,
-          330,
+          318,
           320,
+          325,
+          318,
           320
         ]
       },
@@ -405,7 +412,7 @@
 
         left: 31.4,
 
-        right: 33.1,
+        right: 32.8,
 
         pressure: 655,
 
@@ -416,22 +423,22 @@
           "#f4a261",
 
         temperature: [
-          31.4,
           31.5,
           31.6,
-          31.8,
-          32.2,
-          32.7,
-          33.1
+          31.7,
+          31.9,
+          32.1,
+          32.4,
+          32.8
         ],
 
         pressureData: [
-          320,
-          350,
-          410,
-          450,
-          520,
-          580,
+          470,
+          490,
+          515,
+          540,
+          575,
+          615,
           655
         ]
       },
@@ -447,7 +454,7 @@
 
         left: 31.5,
 
-        right: 34.3,
+        right: 34.0,
 
         pressure: 850,
 
@@ -458,22 +465,22 @@
           "#e63946",
 
         temperature: [
-          31.4,
-          31.5,
-          31.8,
-          32.1,
-          32.8,
+          32.2,
+          32.4,
+          32.7,
+          33.0,
+          33.3,
           33.7,
-          34.3
+          34.0
         ],
 
         pressureData: [
-          320,
-          380,
-          450,
-          550,
-          650,
-          760,
+          700,
+          720,
+          745,
+          770,
+          795,
+          825,
           850
         ]
       }
@@ -489,7 +496,7 @@
         700;
 
       const chartHeight =
-        220;
+        320;
 
       const left =
         55;
@@ -498,10 +505,10 @@
         20;
 
       const top =
-        20;
+        30;
 
       const bottom =
-        32;
+        45;
 
       const width =
         chartWidth -
@@ -586,60 +593,60 @@
       html += `
         <line
           x1="55"
-          y1="20"
+          y1="30"
           x2="55"
-          y2="188"
+          y2="275"
           stroke="#999"
           stroke-width="1"
         />
 
         <line
           x1="55"
-          y1="188"
+          y1="275"
           x2="680"
-          y2="188"
+          y2="275"
           stroke="#999"
           stroke-width="1"
         />
 
         <text
           x="10"
-          y="28"
+          y="38"
           font-size="12">
           36°C
         </text>
 
         <text
           x="10"
-          y="105"
+          y="158"
           font-size="12">
           32°C
         </text>
 
         <text
           x="10"
-          y="191"
+          y="278"
           font-size="12">
           29°C
         </text>
 
         <text
           x="640"
-          y="28"
+          y="38"
           font-size="12">
           900
         </text>
 
         <text
           x="640"
-          y="105"
+          y="158"
           font-size="12">
           450
         </text>
 
         <text
           x="640"
-          y="191"
+          y="278"
           font-size="12">
           0
         </text>
@@ -648,14 +655,18 @@
           points="${pointsToString(tempPoints)}"
           fill="none"
           stroke="#e63946"
-          stroke-width="4"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
 
         <polyline
           points="${pointsToString(pressurePoints)}"
           fill="none"
           stroke="#f4a261"
-          stroke-width="4"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
         />
       `;
 
@@ -665,7 +676,7 @@
             <circle
               cx="${point.x}"
               cy="${point.y}"
-              r="5"
+              r="4"
               fill="#e63946"
             />
           `;
@@ -678,7 +689,7 @@
             <circle
               cx="${point.x}"
               cy="${point.y}"
-              r="5"
+              r="4"
               fill="#f4a261"
             />
           `;
@@ -695,7 +706,7 @@
           html += `
             <text
               x="${x}"
-              y="210"
+              y="300"
               text-anchor="middle"
               font-size="12">
               ${label}
