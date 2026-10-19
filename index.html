@@ -228,8 +228,8 @@
       </div>
 
       <div class="simulation-note">
-        目前為模擬模式：正常狀態大部分時間顯示，
-        只有偶爾出現需要留意或高風險狀態。
+        目前為模擬模式：大部分時間顯示正常狀態，
+        每次更新會產生略有不同的正常數據。
       </div>
 
     </section>
@@ -298,7 +298,7 @@
 
     <section class="card">
 
-      <h2>最近 7 日歷史趨勢</h2>
+      <h2>最近 7 次歷史趨勢</h2>
 
       <div class="chart-box">
 
@@ -365,165 +365,220 @@
     const points =
       document.querySelectorAll(".point");
 
-    const states = [
+    /*
+      Store the latest seven readings.
+    */
+    const history =
+      [];
 
-      {
+    /*
+      Generate a random decimal value
+      within a specified range.
+    */
+    function randomDecimal(
+      min,
+      max,
+      digits
+    ) {
+      const value =
+        min +
+        Math.random() *
+        (max - min);
+
+      return Number(
+        value.toFixed(digits)
+      );
+    }
+
+    /*
+      Generate a random integer
+      within a specified range.
+    */
+    function randomInteger(
+      min,
+      max
+    ) {
+      return Math.floor(
+        min +
+        Math.random() *
+        (max - min + 1)
+      );
+    }
+
+    /*
+      Generate different normal data.
+      The range remains stable and realistic
+      for a prototype demonstration.
+    */
+    function createNormalData() {
+      const left =
+        randomDecimal(
+          30.8,
+          31.8,
+          1
+        );
+
+      const temperatureDifference =
+        randomDecimal(
+          0.1,
+          0.8,
+          1
+        );
+
+      const right =
+        Number(
+          (
+            left +
+            temperatureDifference
+          ).toFixed(1)
+        );
+
+      const pressure =
+        randomInteger(
+          260,
+          420
+        );
+
+      return {
         type: "normal",
-
-        title:
-          "低風險：數據正常",
-
-        subtitle:
-          "建議維持每日足部檢查",
-
-        left: 31.2,
-
-        right: 31.5,
-
-        pressure: 320,
-
+        title: "低風險：數據正常",
+        subtitle: "建議維持每日足部檢查",
+        left: left,
+        right: right,
+        pressure: pressure,
         tip:
           "請繼續每日檢查足部皮膚，保持足部清潔及乾爽。",
+        color: "#52b788"
+      };
+    }
 
-        color:
-          "#52b788",
+    /*
+      Warning data appears occasionally.
+    */
+    function createWarningData() {
+      const left =
+        randomDecimal(
+          31.2,
+          31.8,
+          1
+        );
 
-        temperature: [
-          31.3,
-          31.4,
-          31.4,
-          31.5,
-          31.5,
-          31.6,
-          31.5
-        ],
+      const right =
+        randomDecimal(
+          32.3,
+          33.0,
+          1
+        );
 
-        pressureData: [
-          300,
-          310,
-          318,
-          320,
-          325,
-          318,
-          320
-        ]
-      },
+      const pressure =
+        randomInteger(
+          580,
+          700
+        );
 
-      {
+      return {
         type: "warning",
-
         title:
           "需要留意：建議減壓及檢查足部",
-
         subtitle:
           "請檢查有沒有紅腫、水泡或破皮",
-
-        left: 31.4,
-
-        right: 32.8,
-
-        pressure: 655,
-
+        left: left,
+        right: right,
+        pressure: pressure,
         tip:
           "請減少長時間步行，檢查右腳前掌有沒有紅腫、水泡或破皮。",
+        color: "#f4a261"
+      };
+    }
 
-        color:
-          "#f4a261",
+    /*
+      Danger data appears very rarely.
+    */
+    function createDangerData() {
+      const left =
+        randomDecimal(
+          31.3,
+          31.8,
+          1
+        );
 
-        temperature: [
-          31.5,
-          31.6,
-          31.7,
-          31.9,
-          32.1,
-          32.4,
-          32.8
-        ],
+      const right =
+        randomDecimal(
+          33.5,
+          34.5,
+          1
+        );
 
-        pressureData: [
-          470,
-          490,
-          515,
-          540,
-          575,
-          615,
-          655
-        ]
-      },
+      const pressure =
+        randomInteger(
+          780,
+          880
+        );
 
-      {
+      return {
         type: "danger",
-
         title:
           "高風險：請停止負重並聯絡醫護人員",
-
         subtitle:
           "如有傷口、紅腫或滲液，請盡快求醫",
-
-        left: 31.5,
-
-        right: 34.0,
-
-        pressure: 850,
-
+        left: left,
+        right: right,
+        pressure: pressure,
         tip:
           "請停止負重並檢查足部；如有傷口、紅腫、滲液或變色，請盡快聯絡醫護人員。",
+        color: "#e63946"
+      };
+    }
 
-        color:
-          "#e63946",
-
-        temperature: [
-          32.2,
-          32.4,
-          32.7,
-          33.0,
-          33.3,
-          33.7,
-          34.0
-        ],
-
-        pressureData: [
-          700,
-          720,
-          745,
-          770,
-          795,
-          825,
-          850
-        ]
-      }
-
-    ];
-
-    let currentState =
-      states[0];
-
-    let stateStartTime =
-      Date.now();
-
-    function chooseNextState() {
-      const randomNumber =
+    /*
+      Normal: 90%
+      Warning: 9%
+      Danger: 1%
+    */
+    function createNewData() {
+      const probability =
         Math.random();
 
-      /*
-        Normal: 85%
-        Warning: 13%
-        Danger: 2%
-      */
-
       if (
-        randomNumber < 0.85
+        probability < 0.90
       ) {
-        return states[0];
+        return createNormalData();
       }
 
       if (
-        randomNumber < 0.98
+        probability < 0.99
       ) {
-        return states[1];
+        return createWarningData();
       }
 
-      return states[2];
+      return createDangerData();
+    }
+
+    function addHistoryData(
+      data
+    ) {
+      history.push({
+        time:
+          new Date().toLocaleTimeString(
+            "zh-HK",
+            {
+              hour: "2-digit",
+              minute: "2-digit"
+            }
+          ),
+
+        temperature:
+          data.right,
+
+        pressure:
+          data.pressure
+      });
+
+      if (
+        history.length > 7
+      ) {
+        history.shift();
+      }
     }
 
     function makePoints(
@@ -558,6 +613,25 @@
         chartHeight -
         top -
         bottom;
+
+      if (
+        values.length === 1
+      ) {
+        const y =
+          top +
+          (
+            (max - values[0]) /
+            (max - min)
+          ) *
+          height;
+
+        return [
+          {
+            x: left,
+            y: y
+          }
+        ];
+      }
 
       return values.map(
         function(value, index) {
@@ -599,29 +673,38 @@
         .join(" ");
     }
 
-    function drawChart(
-      state
-    ) {
-      const labels = [
-        "10/07",
-        "10/08",
-        "10/09",
-        "10/10",
-        "10/11",
-        "10/12",
-        "今天"
-      ];
+    function drawChart() {
+      const labels =
+        history.map(
+          function(item) {
+            return item.time;
+          }
+        );
+
+      const temperatureValues =
+        history.map(
+          function(item) {
+            return item.temperature;
+          }
+        );
+
+      const pressureValues =
+        history.map(
+          function(item) {
+            return item.pressure;
+          }
+        );
 
       const tempPoints =
         makePoints(
-          state.temperature,
+          temperatureValues,
           29,
           36
         );
 
       const pressurePoints =
         makePoints(
-          state.pressureData,
+          pressureValues,
           0,
           900
         );
@@ -689,58 +772,81 @@
           font-size="12">
           0
         </text>
-
-        <polyline
-          points="${pointsToString(tempPoints)}"
-          fill="none"
-          stroke="#e63946"
-          stroke-width="3"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        <polyline
-          points="${pointsToString(pressurePoints)}"
-          fill="none"
-          stroke="#f4a261"
-          stroke-width="3"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
       `;
 
-      tempPoints.forEach(
-        function(point) {
-          html += `
-            <circle
-              cx="${point.x}"
-              cy="${point.y}"
-              r="4"
-              fill="#e63946"
-            />
-          `;
-        }
-      );
+      if (
+        tempPoints.length > 0
+      ) {
+        html += `
+          <polyline
+            points="${pointsToString(tempPoints)}"
+            fill="none"
+            stroke="#e63946"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        `;
 
-      pressurePoints.forEach(
-        function(point) {
-          html += `
-            <circle
-              cx="${point.x}"
-              cy="${point.y}"
-              r="4"
-              fill="#f4a261"
-            />
-          `;
-        }
-      );
+        tempPoints.forEach(
+          function(point) {
+            html += `
+              <circle
+                cx="${point.x}"
+                cy="${point.y}"
+                r="4"
+                fill="#e63946"
+              />
+            `;
+          }
+        );
+      }
+
+      if (
+        pressurePoints.length > 0
+      ) {
+        html += `
+          <polyline
+            points="${pointsToString(pressurePoints)}"
+            fill="none"
+            stroke="#f4a261"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        `;
+
+        pressurePoints.forEach(
+          function(point) {
+            html += `
+              <circle
+                cx="${point.x}"
+                cy="${point.y}"
+                r="4"
+                fill="#f4a261"
+              />
+            `;
+          }
+        );
+      }
 
       labels.forEach(
         function(label, index) {
-          const x =
-            55 +
-            index *
-            (625 / 6);
+          let x;
+
+          if (
+            labels.length === 1
+          ) {
+            x = 55;
+          } else {
+            x =
+              55 +
+              index *
+              (
+                625 /
+                (labels.length - 1)
+              );
+          }
 
           html += `
             <text
@@ -758,14 +864,14 @@
         html;
     }
 
-    function drawState(
-      state
+    function updatePage(
+      data
     ) {
       statusBox.className =
         "";
 
       if (
-        state.type === "warning"
+        data.type === "warning"
       ) {
         statusBox.classList.add(
           "warning"
@@ -773,7 +879,7 @@
       }
 
       if (
-        state.type === "danger"
+        data.type === "danger"
       ) {
         statusBox.classList.add(
           "danger"
@@ -781,105 +887,78 @@
       }
 
       statusBox.innerHTML = `
-        ${state.title}
+        ${data.title}
 
         <span class="small">
-          ${state.subtitle}
+          ${data.subtitle}
         </span>
       `;
 
       leftBox.innerText =
-        state.left.toFixed(1) +
+        data.left.toFixed(1) +
         "°C";
 
       rightBox.innerText =
-        state.right.toFixed(1) +
+        data.right.toFixed(1) +
         "°C";
 
       differenceBox.innerText =
         Math.abs(
-          state.right -
-          state.left
+          data.right -
+          data.left
         ).toFixed(1) +
         "°C";
 
       pressureBox.innerText =
-        state.pressure;
+        data.pressure;
 
       modeBox.innerText =
-        state.type === "normal"
+        data.type === "normal"
           ? "正常"
-          : state.type === "warning"
+          : data.type === "warning"
           ? "需留意"
           : "高風險";
 
       tipBox.innerText =
-        state.tip;
+        data.tip;
 
       points.forEach(
         function(point) {
           point.style.background =
-            state.color;
+            data.color;
         }
       );
 
-      drawChart(state);
+      addHistoryData(
+        data
+      );
+
+      drawChart();
     }
 
-    function updatePage() {
-      const now =
-        Date.now();
+    /*
+      Start with normal data.
+    */
+    const firstData =
+      createNormalData();
 
-      const elapsed =
-        now -
-        stateStartTime;
+    updatePage(
+      firstData
+    );
 
-      /*
-        Normal state lasts at least 20 seconds.
-      */
-      if (
-        currentState.type === "normal" &&
-        elapsed < 20000
-      ) {
-        drawState(currentState);
-        return;
-      }
-
-      /*
-        Warning state lasts at least 10 seconds.
-      */
-      if (
-        currentState.type === "warning" &&
-        elapsed < 10000
-      ) {
-        drawState(currentState);
-        return;
-      }
-
-      /*
-        Danger state lasts at least 8 seconds.
-      */
-      if (
-        currentState.type === "danger" &&
-        elapsed < 8000
-      ) {
-        drawState(currentState);
-        return;
-      }
-
-      currentState =
-        chooseNextState();
-
-      stateStartTime =
-        now;
-
-      drawState(currentState);
-    }
-
-    drawState(currentState);
-
+    /*
+      Generate different data every 5 seconds.
+      setInterval repeatedly calls the function.
+    */
     setInterval(
-      updatePage,
+      function() {
+        const newData =
+          createNewData();
+
+        updatePage(
+          newData
+        );
+      },
       5000
     );
   </script>
