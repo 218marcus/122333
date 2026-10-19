@@ -179,11 +179,17 @@
       overflow-x: auto;
     }
 
+    /*
+      The SVG keeps a 2:1 aspect ratio.
+      This prevents the chart from being stretched.
+    */
     #chart {
       display: block;
       width: 100%;
-      min-width: 760px;
-      height: 380px;
+      max-width: 900px;
+      height: auto;
+      aspect-ratio: 900 / 450;
+      margin: auto;
       border-bottom: 1px solid #ddd;
     }
 
@@ -254,7 +260,6 @@
 
       #chart {
         min-width: 760px;
-        height: 360px;
       }
     }
   </style>
@@ -321,8 +326,9 @@
               Great Toe Temperature
             </span>
 
-            <span id="toeTemperature"
-                  class="live-value">
+            <span
+              id="toeTemperature"
+              class="live-value">
               --
             </span>
           </div>
@@ -332,8 +338,9 @@
               1st Metatarsal Temperature
             </span>
 
-            <span id="met1Temperature"
-                  class="live-value">
+            <span
+              id="met1Temperature"
+              class="live-value">
               --
             </span>
           </div>
@@ -343,8 +350,9 @@
               5th Metatarsal Temperature
             </span>
 
-            <span id="met5Temperature"
-                  class="live-value">
+            <span
+              id="met5Temperature"
+              class="live-value">
               --
             </span>
           </div>
@@ -354,8 +362,9 @@
               Heel Temperature
             </span>
 
-            <span id="heelTemperature"
-                  class="live-value">
+            <span
+              id="heelTemperature"
+              class="live-value">
               --
             </span>
           </div>
@@ -395,14 +404,16 @@
 
     <section class="card">
 
-      <h2>Real-Time Temperature and Pressure Trend</h2>
+      <h2>
+        Recent 7 Readings: Temperature and Pressure
+      </h2>
 
       <div class="chart-box">
 
         <svg
           id="chart"
-          viewBox="0 0 760 380"
-          preserveAspectRatio="none">
+          viewBox="0 0 900 450"
+          preserveAspectRatio="xMidYMid meet">
         </svg>
 
       </div>
@@ -451,22 +462,34 @@
       document.getElementById("status");
 
     const toeTemperature =
-      document.getElementById("toeTemperature");
+      document.getElementById(
+        "toeTemperature"
+      );
 
     const met1Temperature =
-      document.getElementById("met1Temperature");
+      document.getElementById(
+        "met1Temperature"
+      );
 
     const met5Temperature =
-      document.getElementById("met5Temperature");
+      document.getElementById(
+        "met5Temperature"
+      );
 
     const heelTemperature =
-      document.getElementById("heelTemperature");
+      document.getElementById(
+        "heelTemperature"
+      );
 
     const overallPressure =
-      document.getElementById("overallPressure");
+      document.getElementById(
+        "overallPressure"
+      );
 
     const highestTemperature =
-      document.getElementById("highestTemperature");
+      document.getElementById(
+        "highestTemperature"
+      );
 
     const temperatureDifference =
       document.getElementById(
@@ -485,6 +508,10 @@
     const mapPoints =
       document.querySelectorAll(".point");
 
+    /*
+      Only the latest seven readings
+      are stored and displayed.
+    */
     const history =
       [];
 
@@ -813,82 +840,106 @@
           data.overallPressure
       });
 
+      /*
+        Keep only the latest seven readings.
+      */
       if (
-        history.length > 12
+        history.length > 7
       ) {
         history.shift();
       }
     }
 
-    function getChartPoints(
-      values,
-      min,
-      max
+    function getXPosition(
+      index,
+      count,
+      left,
+      right
     ) {
-      const chartWidth =
-        760;
+      if (
+        count === 1
+      ) {
+        return left;
+      }
 
-      const chartHeight =
-        380;
+      return left +
+        index *
+        (
+          (900 - left - right) /
+          (count - 1)
+        );
+    }
 
-      const left =
-        70;
-
-      const right =
-        30;
-
+    function getTemperatureY(
+      value
+    ) {
       const top =
-        35;
+        45;
 
       const bottom =
+        365;
+
+      const min =
+        29;
+
+      const max =
+        36;
+
+      return top +
+        (
+          (max - value) /
+          (max - min)
+        ) *
+        (bottom - top);
+    }
+
+    function getPressureY(
+      value
+    ) {
+      const top =
+        45;
+
+      const bottom =
+        365;
+
+      const min =
+        0;
+
+      const max =
+        900;
+
+      return top +
+        (
+          (max - value) /
+          (max - min)
+        ) *
+        (bottom - top);
+    }
+
+    function createPolylinePoints(
+      values,
+      yFunction
+    ) {
+      const left =
+        85;
+
+      const right =
         55;
-
-      const width =
-        chartWidth -
-        left -
-        right;
-
-      const height =
-        chartHeight -
-        top -
-        bottom;
-
-      if (
-        values.length === 1
-      ) {
-        const y =
-          top +
-          (
-            (max - values[0]) /
-            (max - min)
-          ) *
-          height;
-
-        return [
-          {
-            x: left,
-            y: y
-          }
-        ];
-      }
 
       return values.map(
         function(value, index) {
           const x =
-            left +
-            index *
-            (
-              width /
-              (values.length - 1)
+            getXPosition(
+              index,
+              values.length,
+              left,
+              right
             );
 
           const y =
-            top +
-            (
-              (max - value) /
-              (max - min)
-            ) *
-            height;
+            yFunction(
+              value
+            );
 
           return {
             x: x,
@@ -955,160 +1006,178 @@
           }
         );
 
-      /*
-        Temperature uses a 29–36°C scale.
-      */
       const toePoints =
-        getChartPoints(
+        createPolylinePoints(
           toeValues,
-          29,
-          36
+          getTemperatureY
         );
 
       const met1Points =
-        getChartPoints(
+        createPolylinePoints(
           met1Values,
-          29,
-          36
+          getTemperatureY
         );
 
       const met5Points =
-        getChartPoints(
+        createPolylinePoints(
           met5Values,
-          29,
-          36
+          getTemperatureY
         );
 
       const heelPoints =
-        getChartPoints(
+        createPolylinePoints(
           heelValues,
-          29,
-          36
+          getTemperatureY
         );
 
-      /*
-        Overall pressure uses a 0–900 scale.
-        It is mapped into the same chart area
-        for prototype visualization.
-      */
       const pressurePoints =
-        getChartPoints(
+        createPolylinePoints(
           pressureValues,
-          0,
-          900
+          getPressureY
         );
 
       let html =
         "";
 
+      /*
+        Chart background and grid.
+      */
       html += `
-        <line
-          x1="70"
-          y1="35"
-          x2="70"
-          y2="325"
-          stroke="#999"
-          stroke-width="1"
-        />
-
-        <line
-          x1="70"
-          y1="325"
-          x2="730"
-          y2="325"
-          stroke="#999"
-          stroke-width="1"
-        />
-
-        <line
-          x1="70"
-          y1="228"
-          x2="730"
-          y2="228"
+        <rect
+          x="85"
+          y="45"
+          width="760"
+          height="320"
+          fill="#ffffff"
           stroke="#eeeeee"
-          stroke-width="1"
         />
 
         <line
-          x1="70"
-          y1="132"
-          x2="730"
-          y2="132"
+          x1="85"
+          y1="45"
+          x2="845"
+          y2="45"
           stroke="#eeeeee"
-          stroke-width="1"
         />
 
         <line
-          x1="70"
-          y1="35"
-          x2="730"
-          y2="35"
+          x1="85"
+          y1="152"
+          x2="845"
+          y2="152"
           stroke="#eeeeee"
-          stroke-width="1"
+        />
+
+        <line
+          x1="85"
+          y1="258"
+          x2="845"
+          y2="258"
+          stroke="#eeeeee"
+        />
+
+        <line
+          x1="85"
+          y1="365"
+          x2="845"
+          y2="365"
+          stroke="#eeeeee"
+        />
+
+        <line
+          x1="85"
+          y1="45"
+          x2="85"
+          y2="365"
+          stroke="#777"
+        />
+
+        <line
+          x1="845"
+          y1="45"
+          x2="845"
+          y2="365"
+          stroke="#777"
+        />
+
+        <line
+          x1="85"
+          y1="365"
+          x2="845"
+          y2="365"
+          stroke="#777"
         />
 
         <text
-          x="15"
-          y="40"
+          x="28"
+          y="50"
           font-size="12">
           36°C
         </text>
 
         <text
-          x="15"
-          y="137"
+          x="28"
+          y="157"
           font-size="12">
           34°C
         </text>
 
         <text
-          x="15"
-          y="233"
+          x="28"
+          y="263"
           font-size="12">
           32°C
         </text>
 
         <text
-          x="15"
-          y="330"
+          x="28"
+          y="370"
           font-size="12">
           29°C
         </text>
 
         <text
-          x="700"
-          y="40"
+          x="855"
+          y="50"
           font-size="12">
           900
         </text>
 
         <text
-          x="700"
-          y="137"
+          x="855"
+          y="157"
           font-size="12">
           600
         </text>
 
         <text
-          x="700"
-          y="233"
+          x="855"
+          y="263"
           font-size="12">
           300
         </text>
 
         <text
-          x="700"
-          y="330"
+          x="855"
+          y="370"
           font-size="12">
           0
         </text>
 
         <text
-          x="73"
-          y="22"
-          font-size="12"
-          fill="#555">
-          Temperature and Pressure
+          x="85"
+          y="25"
+          font-size="13"
+          fill="#444">
+          Temperature (°C)
+        </text>
+
+        <text
+          x="755"
+          y="25"
+          font-size="13"
+          fill="#444">
+          Pressure
         </text>
       `;
 
@@ -1170,9 +1239,8 @@
           `;
 
           /*
-            Temperature lines use dots.
-            Overall Pressure is shown only
-            as a thick dashed line.
+            Add dots only to temperature lines.
+            Overall pressure remains a dashed line.
           */
           if (
             line.color !==
@@ -1196,26 +1264,18 @@
 
       labels.forEach(
         function(label, index) {
-          let x;
-
-          if (
-            labels.length === 1
-          ) {
-            x = 70;
-          } else {
-            x =
-              70 +
-              index *
-              (
-                660 /
-                (labels.length - 1)
-              );
-          }
+          const x =
+            getXPosition(
+              index,
+              labels.length,
+              85,
+              55
+            );
 
           html += `
             <text
               x="${x}"
-              y="355"
+              y="395"
               text-anchor="middle"
               font-size="11">
               ${label}
