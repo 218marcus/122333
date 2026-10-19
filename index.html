@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Line Chart Test</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+  <title>Chart Test</title>
 
   <style>
     body {
@@ -18,14 +14,31 @@
       background: #f2f5f7;
     }
 
+    h1 {
+      color: #087f8c;
+      text-align: center;
+    }
+
+    #message {
+      padding: 12px;
+      margin: 15px auto;
+      max-width: 800px;
+      border-radius: 8px;
+      text-align: center;
+      background: #fff3cd;
+      color: #664d03;
+    }
+
     .chart-box {
-      width: 100%;
+      position: relative;
+      width: 90%;
       max-width: 800px;
       height: 400px;
-      margin: 30px auto;
+      margin: 20px auto;
       padding: 20px;
       background: white;
       border-radius: 15px;
+      box-shadow: 0 4px 15px #cccccc;
     }
   </style>
 </head>
@@ -34,86 +47,115 @@
 
   <h1>Pressure Trend Test</h1>
 
-  <div class="chart-box">
-    <canvas id="pressureChart"></canvas>
+  <div id="message">
+    Loading Chart.js...
   </div>
 
+  <div class="chart-box">
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <!-- Chart.js must be loaded before the chart script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script>
+    const message =
+      document.getElementById("message");
+
     const canvas =
-      document.getElementById(
-        "pressureChart"
-      );
+      document.getElementById("myChart");
 
     if (typeof Chart === "undefined") {
-      document.body.innerHTML += `
-        <p style="color:red;">
-          Chart.js failed to load.
-        </p>
-      `;
+      message.innerText =
+        "ERROR: Chart.js did not load.";
+
+      message.style.background =
+        "#f8d7da";
+
+      message.style.color =
+        "#842029";
+
     } else {
-      new Chart(
-        canvas,
-        {
-          type: "line",
+      const chart =
+        new Chart(
+          canvas,
+          {
+            type: "line",
 
-           {
-            labels: [
-              "09:00",
-              "09:01",
-              "09:02",
-              "09:03",
-              "09:04",
-              "09:05"
-            ],
+             {
+              labels: [
+                "09:00",
+                "09:01",
+                "09:02",
+                "09:03",
+                "09:04",
+                "09:05"
+              ],
 
-            datasets: [
-              {
-                label: "Pressure",
-                 [
-                  250,
-                  380,
-                  420,
-                  610,
-                  520,
-                  700
-                ],
-                borderColor: "#087f8c",
-                backgroundColor:
-                  "rgba(8, 127, 140, 0.15)",
-                borderWidth: 3,
-                pointRadius: 5,
-                tension: 0.3,
-                fill: true
-              }
-            ]
-          },
+              datasets: [
+                {
+                  label: "Pressure",
+                   [
+                    200,
+                    350,
+                    450,
+                    600,
+                    520,
+                    720
+                  ],
+                  borderColor: "#087f8c",
+                  backgroundColor:
+                    "rgba(8, 127, 140, 0.2)",
+                  borderWidth: 4,
+                  pointRadius: 6,
+                  pointBackgroundColor:
+                    "#e63946",
+                  tension: 0.3,
+                  fill: true
+                }
+              ]
+            },
 
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
 
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: "Pressure"
+              plugins: {
+                legend: {
+                  display: true
                 }
               },
 
-              x: {
-                title: {
-                  display: true,
-                  text: "Time"
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: "Pressure"
+                  }
+                },
+
+                x: {
+                  title: {
+                    display: true,
+                    text: "Time"
+                  }
                 }
               }
             }
           }
-        }
-      );
+        );
+
+      message.innerText =
+        "Chart loaded successfully.";
+
+      message.style.background =
+        "#d1e7dd";
+
+      message.style.color =
+        "#0f5132";
     }
   </script>
 
 </body>
-
 </html>
