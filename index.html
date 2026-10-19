@@ -189,17 +189,14 @@
       border-bottom: 1px solid #ddd;
     }
 
-    .legend {
-      color: #555;
-      line-height: 2;
-      font-size: 14px;
-    }
-
     .legend-row {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
       margin-top: 10px;
+      color: #555;
+      font-size: 14px;
+      line-height: 2;
     }
 
     .legend-item {
@@ -231,16 +228,6 @@
       line-height: 1.7;
     }
 
-    .simulation-note {
-      margin-top: 12px;
-      padding: 10px;
-      border-radius: 8px;
-      color: #667085;
-      background: #f7f9fa;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
     @media (max-width: 650px) {
       body {
         padding: 10px;
@@ -269,7 +256,7 @@
       <h1>AuraSole</h1>
 
       <p>
-        Daily Diabetic Foot Risk Monitoring Prototype
+        Daily Diabetic Foot Risk Monitoring
       </p>
     </header>
 
@@ -283,18 +270,13 @@
         </span>
       </div>
 
-      <div class="simulation-note">
-        Simulation mode: four temperature readings and
-        one overall pressure reading are updated every five seconds.
-      </div>
-
     </section>
 
     <div class="grid">
 
       <section class="card">
 
-        <h2>DFU Risk Map</h2>
+        <h2>Diabetic Foot Risk Map</h2>
 
         <div class="foot">
           <div id="toe" class="point"></div>
@@ -303,10 +285,18 @@
           <div id="heel" class="point"></div>
         </div>
 
-        <p class="legend">
-          Green: Normal<br>
-          Yellow: Attention Required<br>
-          Red: High Risk
+        <p class="legend-row">
+          <span class="legend-item">
+            Green: Normal
+          </span>
+
+          <span class="legend-item">
+            Yellow: Attention Required
+          </span>
+
+          <span class="legend-item">
+            Red: High Risk
+          </span>
         </p>
 
       </section>
@@ -331,7 +321,7 @@
 
           <div class="live-box">
             <span class="live-label">
-              1st Metatarsal Temperature
+              First Metatarsal Temperature
             </span>
 
             <span
@@ -343,7 +333,7 @@
 
           <div class="live-box">
             <span class="live-label">
-              5th Metatarsal Temperature
+              Fifth Metatarsal Temperature
             </span>
 
             <span
@@ -421,11 +411,11 @@
         </span>
 
         <span class="legend-item met1-color">
-          ● 1st Metatarsal Temperature
+          ● First Metatarsal Temperature
         </span>
 
         <span class="legend-item met5-color">
-          ● 5th Metatarsal Temperature
+          ● Fifth Metatarsal Temperature
         </span>
 
         <span class="legend-item heel-color">
@@ -505,16 +495,14 @@
       document.querySelectorAll(".point");
 
     /*
-      Only the latest seven readings
-      are stored and displayed.
+      Store only the latest seven readings.
     */
     const history =
       [];
 
     /*
-      When a High Risk reading appears,
-      this counter forces two additional
-      High Risk readings.
+      After the first High Risk reading,
+      two more High Risk readings are forced.
     */
     let highRiskRemaining =
       0;
@@ -791,18 +779,17 @@
     }
 
     /*
-      State sequence:
+      The state sequence is:
 
-      Normal or Warning
+      Normal or Attention Required
       High Risk
       High Risk
       High Risk
-      Normal or Warning
+      Normal or Attention Required
     */
     function createNewData() {
       /*
-        If this counter is active,
-        force High Risk.
+        Force two additional High Risk readings.
       */
       if (
         highRiskRemaining > 0
@@ -817,8 +804,6 @@
 
       /*
         High Risk probability: 1%.
-        The first High Risk reading is
-        followed by two forced readings.
       */
       if (
         probability < 0.01
@@ -829,7 +814,7 @@
       }
 
       /*
-        Warning probability: 9%.
+        Attention Required probability: 9%.
       */
       if (
         probability < 0.10
@@ -1269,8 +1254,8 @@
           `;
 
           /*
-            Temperature lines show dots.
-            Overall Pressure is a dashed line only.
+            Temperature lines show data points.
+            Overall Pressure is a dashed line.
           */
           if (
             line.color !==
@@ -1410,7 +1395,7 @@
         data.type === "normal"
           ? "Normal"
           : data.type === "warning"
-          ? "Attention"
+          ? "Attention Required"
           : "High Risk";
 
       tipBox.innerText =
@@ -1435,7 +1420,7 @@
     );
 
     /*
-      Update every five seconds.
+      Update readings every five seconds.
     */
     setInterval(
       function() {
