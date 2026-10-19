@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -213,23 +213,23 @@
       <h1>AuraSole</h1>
 
       <p>
-        糖尿病足日常風險監測原型
+        Daily Diabetic Foot Risk Monitoring Prototype
       </p>
     </header>
 
     <section class="card">
 
       <div id="status">
-        低風險：數據正常
+        Low Risk: Data Normal
 
         <span class="small">
-          建議維持每日足部檢查
+          Continue daily foot checks
         </span>
       </div>
 
       <div class="simulation-note">
-        目前為模擬模式：大部分時間顯示正常狀態，
-        每次更新會產生略有不同的正常數據。
+        Simulation mode: normal readings appear most of the time,
+        with slightly different values generated at every update.
       </div>
 
     </section>
@@ -248,46 +248,46 @@
         </div>
 
         <p class="legend">
-          綠色：正常<br>
-          黃色：需要留意<br>
-          紅色：高風險
+          Green: Normal<br>
+          Yellow: Attention Required<br>
+          Red: High Risk
         </p>
 
       </section>
 
       <section class="card">
 
-        <h2>即時數據</h2>
+        <h2>Live Data</h2>
 
         <div class="data">
 
-          左腳溫度：
+          Left Foot Temperature:
           <span id="left">
             31.2°C
           </span>
           <br>
 
-          右腳溫度：
+          Right Foot Temperature:
           <span id="right">
             31.5°C
           </span>
           <br>
 
-          左右溫差：
+          Temperature Difference:
           <span id="difference">
             0.3°C
           </span>
           <br>
 
-          最大壓力：
+          Maximum Pressure:
           <span id="pressure">
             320
           </span>
           <br>
 
-          狀態：
+          Status:
           <span id="mode">
-            正常
+            Normal
           </span>
 
         </div>
@@ -298,7 +298,7 @@
 
     <section class="card">
 
-      <h2>最近 7 次歷史趨勢</h2>
+      <h2>Recent 7 Readings Trend</h2>
 
       <div class="chart-box">
 
@@ -313,11 +313,11 @@
       <p class="legend">
 
         <span class="line-red">
-          ━ 右腳溫度
+          ━ Right Foot Temperature
         </span>
 
         <span class="line-orange">
-          ━ 最大足底壓力
+          ━ Maximum Plantar Pressure
         </span>
 
       </p>
@@ -326,11 +326,11 @@
 
     <section class="card">
 
-      <h2>系統建議</h2>
+      <h2>System Recommendation</h2>
 
       <p id="tip" class="tip">
-        請繼續每日檢查足部皮膚，
-        保持足部清潔及乾爽。
+        Continue checking your feet every day
+        and keep them clean and dry.
       </p>
 
     </section>
@@ -407,8 +407,9 @@
 
     /*
       Generate different normal data.
-      The range remains stable and realistic
-      for a prototype demonstration.
+
+      The values remain within a stable
+      and reasonable prototype range.
     */
     function createNormalData() {
       const left =
@@ -441,14 +442,24 @@
 
       return {
         type: "normal",
-        title: "低風險：數據正常",
-        subtitle: "建議維持每日足部檢查",
+
+        title:
+          "Low Risk: Data Normal",
+
+        subtitle:
+          "Continue daily foot checks",
+
         left: left,
+
         right: right,
+
         pressure: pressure,
+
         tip:
-          "請繼續每日檢查足部皮膚，保持足部清潔及乾爽。",
-        color: "#52b788"
+          "Continue checking your feet every day and keep them clean and dry.",
+
+        color:
+          "#52b788"
       };
     }
 
@@ -478,16 +489,24 @@
 
       return {
         type: "warning",
+
         title:
-          "需要留意：建議減壓及檢查足部",
+          "Attention Required",
+
         subtitle:
-          "請檢查有沒有紅腫、水泡或破皮",
+          "Inspect for redness, blisters, or broken skin",
+
         left: left,
+
         right: right,
+
         pressure: pressure,
+
         tip:
-          "請減少長時間步行，檢查右腳前掌有沒有紅腫、水泡或破皮。",
-        color: "#f4a261"
+          "Reduce prolonged walking and inspect the front of the foot for redness, blisters, or broken skin.",
+
+        color:
+          "#f4a261"
       };
     }
 
@@ -517,16 +536,24 @@
 
       return {
         type: "danger",
+
         title:
-          "高風險：請停止負重並聯絡醫護人員",
+          "High Risk: Stop Weight-Bearing",
+
         subtitle:
-          "如有傷口、紅腫或滲液，請盡快求醫",
+          "Seek medical advice promptly if a wound or redness is present",
+
         left: left,
+
         right: right,
+
         pressure: pressure,
+
         tip:
-          "請停止負重並檢查足部；如有傷口、紅腫、滲液或變色，請盡快聯絡醫護人員。",
-        color: "#e63946"
+          "Stop weight-bearing and inspect your foot. Seek medical advice promptly if there is a wound, redness, discharge, or discoloration.",
+
+        color:
+          "#e63946"
       };
     }
 
@@ -560,7 +587,7 @@
       history.push({
         time:
           new Date().toLocaleTimeString(
-            "zh-HK",
+            "en-HK",
             {
               hour: "2-digit",
               minute: "2-digit"
@@ -914,10 +941,10 @@
 
       modeBox.innerText =
         data.type === "normal"
-          ? "正常"
+          ? "Normal"
           : data.type === "warning"
-          ? "需留意"
-          : "高風險";
+          ? "Attention"
+          : "High Risk";
 
       tipBox.innerText =
         data.tip;
@@ -947,8 +974,7 @@
     );
 
     /*
-      Generate different data every 5 seconds.
-      setInterval repeatedly calls the function.
+      Generate new data every 5 seconds.
     */
     setInterval(
       function() {
