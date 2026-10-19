@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="viewport"
+        content="width=device-width,
+        initial-scale=1.0">
 
   <title>Chart Test</title>
 
@@ -20,9 +24,9 @@
     }
 
     #message {
-      padding: 12px;
-      margin: 15px auto;
       max-width: 800px;
+      margin: 15px auto;
+      padding: 12px;
       border-radius: 8px;
       text-align: center;
       background: #fff3cd;
@@ -55,8 +59,7 @@
     <canvas id="myChart"></canvas>
   </div>
 
-  <!-- Chart.js must be loaded before the chart script -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
 
   <script>
     const message =
@@ -74,77 +77,69 @@
 
       message.style.color =
         "#842029";
-
     } else {
-      const chart =
-        new Chart(
-          canvas,
-          {
-            type: "line",
+      new Chart(
+        canvas,
+        {
+          type: "line",
 
-             {
-              labels: [
-                "09:00",
-                "09:01",
-                "09:02",
-                "09:03",
-                "09:04",
-                "09:05"
-              ],
+           {
+            labels: [
+              "09:00",
+              "09:01",
+              "09:02",
+              "09:03",
+              "09:04",
+              "09:05"
+            ],
 
-              datasets: [
-                {
-                  label: "Pressure",
-                   [
-                    200,
-                    350,
-                    450,
-                    600,
-                    520,
-                    720
-                  ],
-                  borderColor: "#087f8c",
-                  backgroundColor:
-                    "rgba(8, 127, 140, 0.2)",
-                  borderWidth: 4,
-                  pointRadius: 6,
-                  pointBackgroundColor:
-                    "#e63946",
-                  tension: 0.3,
-                  fill: true
-                }
-              ]
-            },
+            datasets: [
+              {
+                label: "Pressure",
+                 [
+                  200,
+                  350,
+                  450,
+                  600,
+                  520,
+                  720
+                ],
+                borderColor: "#087f8c",
+                backgroundColor:
+                  "rgba(8, 127, 140, 0.2)",
+                borderWidth: 4,
+                pointRadius: 6,
+                pointBackgroundColor:
+                  "#e63946",
+                tension: 0.3,
+                fill: true
+              }
+            ]
+          },
 
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
 
-              plugins: {
-                legend: {
-                  display: true
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Pressure"
                 }
               },
 
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  title: {
-                    display: true,
-                    text: "Pressure"
-                  }
-                },
-
-                x: {
-                  title: {
-                    display: true,
-                    text: "Time"
-                  }
+              x: {
+                title: {
+                  display: true,
+                  text: "Time"
                 }
               }
             }
           }
-        );
+        }
+      );
 
       message.innerText =
         "Chart loaded successfully.";
