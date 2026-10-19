@@ -182,8 +182,8 @@
     #chart {
       display: block;
       width: 100%;
-      min-width: 720px;
-      height: 360px;
+      min-width: 760px;
+      height: 380px;
       border-bottom: 1px solid #ddd;
     }
 
@@ -253,8 +253,8 @@
       }
 
       #chart {
-        min-width: 720px;
-        height: 340px;
+        min-width: 760px;
+        height: 360px;
       }
     }
   </style>
@@ -283,8 +283,8 @@
       </div>
 
       <div class="simulation-note">
-        Simulation mode: four foot locations are updated
-        every five seconds with different pressure readings.
+        Simulation mode: four temperature readings and
+        one overall pressure reading are updated every five seconds.
       </div>
 
     </section>
@@ -312,16 +312,16 @@
 
       <section class="card">
 
-        <h2>Live Pressure Readings</h2>
+        <h2>Live Measurements</h2>
 
         <div class="live-grid">
 
           <div class="live-box">
             <span class="live-label">
-              Great Toe
+              Great Toe Temperature
             </span>
 
-            <span id="toeValue"
+            <span id="toeTemperature"
                   class="live-value">
               --
             </span>
@@ -329,10 +329,10 @@
 
           <div class="live-box">
             <span class="live-label">
-              1st Metatarsal
+              1st Metatarsal Temperature
             </span>
 
-            <span id="met1Value"
+            <span id="met1Temperature"
                   class="live-value">
               --
             </span>
@@ -340,10 +340,10 @@
 
           <div class="live-box">
             <span class="live-label">
-              5th Metatarsal
+              5th Metatarsal Temperature
             </span>
 
-            <span id="met5Value"
+            <span id="met5Temperature"
                   class="live-value">
               --
             </span>
@@ -351,10 +351,10 @@
 
           <div class="live-box">
             <span class="live-label">
-              Heel
+              Heel Temperature
             </span>
 
-            <span id="heelValue"
+            <span id="heelTemperature"
                   class="live-value">
               --
             </span>
@@ -364,20 +364,20 @@
 
         <div class="data">
 
-          Average Pressure:
-          <span id="averagePressure">
-            --
-          </span>
-          <br>
-
           Overall Pressure:
           <span id="overallPressure">
             --
           </span>
           <br>
 
-          Highest Pressure:
-          <span id="highestPressure">
+          Highest Temperature:
+          <span id="highestTemperature">
+            --
+          </span>
+          <br>
+
+          Temperature Difference:
+          <span id="temperatureDifference">
             --
           </span>
           <br>
@@ -395,13 +395,13 @@
 
     <section class="card">
 
-      <h2>Real-Time Pressure Trend</h2>
+      <h2>Real-Time Temperature and Pressure Trend</h2>
 
       <div class="chart-box">
 
         <svg
           id="chart"
-          viewBox="0 0 720 360"
+          viewBox="0 0 760 380"
           preserveAspectRatio="none">
         </svg>
 
@@ -410,19 +410,19 @@
       <div class="legend-row">
 
         <span class="legend-item toe-color">
-          ● Great Toe
+          ● Great Toe Temperature
         </span>
 
         <span class="legend-item met1-color">
-          ● 1st Metatarsal
+          ● 1st Metatarsal Temperature
         </span>
 
         <span class="legend-item met5-color">
-          ● 5th Metatarsal
+          ● 5th Metatarsal Temperature
         </span>
 
         <span class="legend-item heel-color">
-          ● Heel
+          ● Heel Temperature
         </span>
 
         <span class="legend-item overall-color">
@@ -450,26 +450,28 @@
     const statusBox =
       document.getElementById("status");
 
-    const toeValue =
-      document.getElementById("toeValue");
+    const toeTemperature =
+      document.getElementById("toeTemperature");
 
-    const met1Value =
-      document.getElementById("met1Value");
+    const met1Temperature =
+      document.getElementById("met1Temperature");
 
-    const met5Value =
-      document.getElementById("met5Value");
+    const met5Temperature =
+      document.getElementById("met5Temperature");
 
-    const heelValue =
-      document.getElementById("heelValue");
-
-    const averagePressure =
-      document.getElementById("averagePressure");
+    const heelTemperature =
+      document.getElementById("heelTemperature");
 
     const overallPressure =
       document.getElementById("overallPressure");
 
-    const highestPressure =
-      document.getElementById("highestPressure");
+    const highestTemperature =
+      document.getElementById("highestTemperature");
+
+    const temperatureDifference =
+      document.getElementById(
+        "temperatureDifference"
+      );
 
     const modeBox =
       document.getElementById("mode");
@@ -494,6 +496,21 @@
       overall: "#222222"
     };
 
+    function randomDecimal(
+      min,
+      max,
+      digits
+    ) {
+      const value =
+        min +
+        Math.random() *
+        (max - min);
+
+      return Number(
+        value.toFixed(digits)
+      );
+    }
+
     function randomInteger(
       min,
       max
@@ -506,28 +523,69 @@
     }
 
     function createNormalData() {
+      const baseTemperature =
+        randomDecimal(
+          30.7,
+          31.5,
+          1
+        );
+
       return {
         type: "normal",
 
-        toe: randomInteger(
-          260,
-          390
-        ),
+        toeTemperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                -0.2,
+                0.2,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        met1: randomInteger(
-          280,
-          430
-        ),
+        met1Temperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                -0.1,
+                0.3,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        met5: randomInteger(
-          250,
-          400
-        ),
+        met5Temperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                0.0,
+                0.4,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        heel: randomInteger(
-          220,
-          360
-        ),
+        heelTemperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                -0.3,
+                0.1,
+                1
+              )
+            ).toFixed(1)
+          ),
+
+        overallPressure:
+          randomInteger(
+            260,
+            420
+          ),
 
         title:
           "Low Risk: Data Normal",
@@ -544,28 +602,69 @@
     }
 
     function createWarningData() {
+      const baseTemperature =
+        randomDecimal(
+          31.6,
+          32.2,
+          1
+        );
+
       return {
         type: "warning",
 
-        toe: randomInteger(
-          450,
-          600
-        ),
+        toeTemperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                -0.1,
+                0.2,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        met1: randomInteger(
-          570,
-          700
-        ),
+        met1Temperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                0.2,
+                0.6,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        met5: randomInteger(
-          480,
-          620
-        ),
+        met5Temperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                0.3,
+                0.8,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        heel: randomInteger(
-          420,
-          560
-        ),
+        heelTemperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                -0.2,
+                0.2,
+                1
+              )
+            ).toFixed(1)
+          ),
+
+        overallPressure:
+          randomInteger(
+            560,
+            700
+          ),
 
         title:
           "Attention Required",
@@ -582,28 +681,69 @@
     }
 
     function createDangerData() {
+      const baseTemperature =
+        randomDecimal(
+          33.0,
+          34.0,
+          1
+        );
+
       return {
         type: "danger",
 
-        toe: randomInteger(
-          700,
-          820
-        ),
+        toeTemperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                -0.2,
+                0.1,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        met1: randomInteger(
-          800,
-          900
-        ),
+        met1Temperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                0.2,
+                0.7,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        met5: randomInteger(
-          720,
-          850
-        ),
+        met5Temperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                0.3,
+                0.9,
+                1
+              )
+            ).toFixed(1)
+          ),
 
-        heel: randomInteger(
-          650,
-          780
-        ),
+        heelTemperature:
+          Number(
+            (
+              baseTemperature +
+              randomDecimal(
+                -0.3,
+                0.2,
+                1
+              )
+            ).toFixed(1)
+          ),
+
+        overallPressure:
+          randomInteger(
+            780,
+            880
+          ),
 
         title:
           "High Risk: Stop Weight-Bearing",
@@ -643,49 +783,9 @@
       return createDangerData();
     }
 
-    function calculatePressureValues(
-      data
-    ) {
-      const values = [
-        data.toe,
-        data.met1,
-        data.met5,
-        data.heel
-      ];
-
-      const total =
-        values.reduce(
-          function(sum, value) {
-            return sum + value;
-          },
-          0
-        );
-
-      const average =
-        Math.round(
-          total / values.length
-        );
-
-      const highest =
-        Math.max(
-          ...values
-        );
-
-      return {
-        average: average,
-        overall: average,
-        highest: highest
-      };
-    }
-
     function addHistoryData(
       data
     ) {
-      const pressure =
-        calculatePressureValues(
-          data
-        );
-
       history.push({
         time:
           new Date().toLocaleTimeString(
@@ -697,15 +797,20 @@
             }
           ),
 
-        toe: data.toe,
+        toeTemperature:
+          data.toeTemperature,
 
-        met1: data.met1,
+        met1Temperature:
+          data.met1Temperature,
 
-        met5: data.met5,
+        met5Temperature:
+          data.met5Temperature,
 
-        heel: data.heel,
+        heelTemperature:
+          data.heelTemperature,
 
-        overall: pressure.overall
+        overallPressure:
+          data.overallPressure
       });
 
       if (
@@ -721,19 +826,19 @@
       max
     ) {
       const chartWidth =
-        720;
+        760;
 
       const chartHeight =
-        360;
+        380;
 
       const left =
-        65;
+        70;
 
       const right =
-        25;
+        30;
 
       const top =
-        30;
+        35;
 
       const bottom =
         55;
@@ -818,69 +923,77 @@
       const toeValues =
         history.map(
           function(item) {
-            return item.toe;
+            return item.toeTemperature;
           }
         );
 
       const met1Values =
         history.map(
           function(item) {
-            return item.met1;
+            return item.met1Temperature;
           }
         );
 
       const met5Values =
         history.map(
           function(item) {
-            return item.met5;
+            return item.met5Temperature;
           }
         );
 
       const heelValues =
         history.map(
           function(item) {
-            return item.heel;
+            return item.heelTemperature;
           }
         );
 
-      const overallValues =
+      const pressureValues =
         history.map(
           function(item) {
-            return item.overall;
+            return item.overallPressure;
           }
         );
 
+      /*
+        Temperature uses a 29–36°C scale.
+      */
       const toePoints =
         getChartPoints(
           toeValues,
-          0,
-          900
+          29,
+          36
         );
 
       const met1Points =
         getChartPoints(
           met1Values,
-          0,
-          900
+          29,
+          36
         );
 
       const met5Points =
         getChartPoints(
           met5Values,
-          0,
-          900
+          29,
+          36
         );
 
       const heelPoints =
         getChartPoints(
           heelValues,
-          0,
-          900
+          29,
+          36
         );
 
-      const overallPoints =
+      /*
+        Overall pressure uses a 0–900 scale.
+        It is mapped into the same chart area
+        for prototype visualization.
+      */
+      const pressurePoints =
         getChartPoints(
-          overallValues,
+          pressureValues,
           0,
           900
         );
@@ -890,76 +1003,112 @@
 
       html += `
         <line
-          x1="65"
-          y1="30"
-          x2="65"
-          y2="305"
+          x1="70"
+          y1="35"
+          x2="70"
+          y2="325"
           stroke="#999"
           stroke-width="1"
         />
 
         <line
-          x1="65"
-          y1="305"
-          x2="695"
-          y2="305"
+          x1="70"
+          y1="325"
+          x2="730"
+          y2="325"
           stroke="#999"
           stroke-width="1"
         />
 
         <line
-          x1="65"
-          y1="213"
-          x2="695"
-          y2="213"
+          x1="70"
+          y1="228"
+          x2="730"
+          y2="228"
           stroke="#eeeeee"
           stroke-width="1"
         />
 
         <line
-          x1="65"
-          y1="121"
-          x2="695"
-          y2="121"
+          x1="70"
+          y1="132"
+          x2="730"
+          y2="132"
           stroke="#eeeeee"
           stroke-width="1"
         />
 
         <line
-          x1="65"
-          y1="30"
-          x2="695"
-          y2="30"
+          x1="70"
+          y1="35"
+          x2="730"
+          y2="35"
           stroke="#eeeeee"
           stroke-width="1"
         />
 
         <text
-          x="18"
-          y="35"
+          x="15"
+          y="40"
+          font-size="12">
+          36°C
+        </text>
+
+        <text
+          x="15"
+          y="137"
+          font-size="12">
+          34°C
+        </text>
+
+        <text
+          x="15"
+          y="233"
+          font-size="12">
+          32°C
+        </text>
+
+        <text
+          x="15"
+          y="330"
+          font-size="12">
+          29°C
+        </text>
+
+        <text
+          x="700"
+          y="40"
           font-size="12">
           900
         </text>
 
         <text
-          x="18"
-          y="126"
+          x="700"
+          y="137"
           font-size="12">
           600
         </text>
 
         <text
-          x="18"
-          y="218"
+          x="700"
+          y="233"
           font-size="12">
           300
         </text>
 
         <text
-          x="28"
-          y="310"
+          x="700"
+          y="330"
           font-size="12">
           0
+        </text>
+
+        <text
+          x="73"
+          y="22"
+          font-size="12"
+          fill="#555">
+          Temperature and Pressure
         </text>
       `;
 
@@ -993,7 +1142,7 @@
         },
 
         {
-          points: overallPoints,
+          points: pressurePoints,
           color: lineColors.overall,
           width: 5,
           dash: "10 6"
@@ -1021,9 +1170,9 @@
           `;
 
           /*
-            The four individual locations
-            have dots. Overall Pressure is
-            shown as a dashed line only.
+            Temperature lines use dots.
+            Overall Pressure is shown only
+            as a thick dashed line.
           */
           if (
             line.color !==
@@ -1052,13 +1201,13 @@
           if (
             labels.length === 1
           ) {
-            x = 65;
+            x = 70;
           } else {
             x =
-              65 +
+              70 +
               index *
               (
-                630 /
+                660 /
                 (labels.length - 1)
               );
           }
@@ -1066,7 +1215,7 @@
           html += `
             <text
               x="${x}"
-              y="335"
+              y="355"
               text-anchor="middle"
               font-size="11">
               ${label}
@@ -1120,31 +1269,52 @@
         </span>
       `;
 
-      toeValue.innerText =
-        data.toe;
+      toeTemperature.innerText =
+        data.toeTemperature.toFixed(1) +
+        "°C";
 
-      met1Value.innerText =
-        data.met1;
+      met1Temperature.innerText =
+        data.met1Temperature.toFixed(1) +
+        "°C";
 
-      met5Value.innerText =
-        data.met5;
+      met5Temperature.innerText =
+        data.met5Temperature.toFixed(1) +
+        "°C";
 
-      heelValue.innerText =
-        data.heel;
-
-      const pressure =
-        calculatePressureValues(
-          data
-        );
-
-      averagePressure.innerText =
-        pressure.average;
+      heelTemperature.innerText =
+        data.heelTemperature.toFixed(1) +
+        "°C";
 
       overallPressure.innerText =
-        pressure.overall;
+        data.overallPressure;
 
-      highestPressure.innerText =
-        pressure.highest;
+      const temperatures = [
+        data.toeTemperature,
+        data.met1Temperature,
+        data.met5Temperature,
+        data.heelTemperature
+      ];
+
+      const highest =
+        Math.max(
+          ...temperatures
+        );
+
+      const lowest =
+        Math.min(
+          ...temperatures
+        );
+
+      highestTemperature.innerText =
+        highest.toFixed(1) +
+        "°C";
+
+      temperatureDifference.innerText =
+        (
+          highest -
+          lowest
+        ).toFixed(1) +
+        "°C";
 
       modeBox.innerText =
         data.type === "normal"
