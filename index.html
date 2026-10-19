@@ -70,6 +70,7 @@
       font-weight: bold;
       background: #b7efc5;
       color: #176b36;
+      transition: 0.3s;
     }
 
     #status.warning {
@@ -150,10 +151,6 @@
       overflow-x: auto;
     }
 
-    /*
-      The chart box keeps the original height.
-      The data trend is adjusted instead.
-    */
     #chart {
       display: block;
       width: 100%;
@@ -179,6 +176,16 @@
     .tip {
       color: #555;
       line-height: 1.7;
+    }
+
+    .simulation-note {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      color: #667085;
+      background: #f7f9fa;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
     @media (max-width: 650px) {
@@ -218,6 +225,11 @@
         <span class="small">
           建議維持每日足部檢查
         </span>
+      </div>
+
+      <div class="simulation-note">
+        目前為模擬模式：正常狀態大部分時間顯示，
+        只有偶爾出現需要留意或高風險狀態。
       </div>
 
     </section>
@@ -353,10 +365,6 @@
     const points =
       document.querySelectorAll(".point");
 
-    /*
-      The simulated data is intentionally smoother.
-      Adjacent values change gradually.
-    */
     const states = [
 
       {
@@ -486,6 +494,37 @@
       }
 
     ];
+
+    let currentState =
+      states[0];
+
+    let stateStartTime =
+      Date.now();
+
+    function chooseNextState() {
+      const randomNumber =
+        Math.random();
+
+      /*
+        Normal: 85%
+        Warning: 13%
+        Danger: 2%
+      */
+
+      if (
+        randomNumber < 0.85
+      ) {
+        return states[0];
+      }
+
+      if (
+        randomNumber < 0.98
+      ) {
+        return states[1];
+      }
+
+      return states[2];
+    }
 
     function makePoints(
       values,
@@ -719,15 +758,9 @@
         html;
     }
 
-    function updatePage() {
-      const state =
-        states[
-          Math.floor(
-            Date.now() / 3000
-          ) %
-          states.length
-        ];
-
+    function drawState(
+      state
+    ) {
       statusBox.className =
         "";
 
@@ -793,11 +826,61 @@
       drawChart(state);
     }
 
-    updatePage();
+    function updatePage() {
+      const now =
+        Date.now();
+
+      const elapsed =
+        now -
+        stateStartTime;
+
+      /*
+        Normal state lasts at least 20 seconds.
+      */
+      if (
+        currentState.type === "normal" &&
+        elapsed < 20000
+      ) {
+        drawState(currentState);
+        return;
+      }
+
+      /*
+        Warning state lasts at least 10 seconds.
+      */
+      if (
+        currentState.type === "warning" &&
+        elapsed < 10000
+      ) {
+        drawState(currentState);
+        return;
+      }
+
+      /*
+        Danger state lasts at least 8 seconds.
+      */
+      if (
+        currentState.type === "danger" &&
+        elapsed < 8000
+      ) {
+        drawState(currentState);
+        return;
+      }
+
+      currentState =
+        chooseNextState();
+
+      stateStartTime =
+        now;
+
+      drawState(currentState);
+    }
+
+    drawState(currentState);
 
     setInterval(
       updatePage,
-      3000
+      5000
     );
   </script>
 
