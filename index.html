@@ -179,16 +179,12 @@
       overflow-x: auto;
     }
 
-    /*
-      The SVG keeps a 2:1 aspect ratio.
-      This prevents the chart from being stretched.
-    */
     #chart {
       display: block;
       width: 100%;
       max-width: 900px;
       height: auto;
-      aspect-ratio: 900 / 450;
+      aspect-ratio: 2 / 1;
       margin: auto;
       border-bottom: 1px solid #ddd;
     }
@@ -515,6 +511,14 @@
     const history =
       [];
 
+    /*
+      When a High Risk reading appears,
+      this counter forces two additional
+      High Risk readings.
+    */
+    let highRiskRemaining =
+      0;
+
     const lineColors = {
       toe: "#e63946",
       met1: "#087f8c",
@@ -787,27 +791,56 @@
     }
 
     /*
-      Normal: 90%
-      Warning: 9%
-      Danger: 1%
+      State sequence:
+
+      Normal or Warning
+      High Risk
+      High Risk
+      High Risk
+      Normal or Warning
     */
     function createNewData() {
+      /*
+        If this counter is active,
+        force High Risk.
+      */
+      if (
+        highRiskRemaining > 0
+      ) {
+        highRiskRemaining--;
+
+        return createDangerData();
+      }
+
       const probability =
         Math.random();
 
+      /*
+        High Risk probability: 1%.
+        The first High Risk reading is
+        followed by two forced readings.
+      */
       if (
-        probability < 0.90
+        probability < 0.01
       ) {
-        return createNormalData();
+        highRiskRemaining = 2;
+
+        return createDangerData();
       }
 
+      /*
+        Warning probability: 9%.
+      */
       if (
-        probability < 0.99
+        probability < 0.10
       ) {
         return createWarningData();
       }
 
-      return createDangerData();
+      /*
+        Normal probability: 90%.
+      */
+      return createNormalData();
     }
 
     function addHistoryData(
@@ -1039,9 +1072,6 @@
       let html =
         "";
 
-      /*
-        Chart background and grid.
-      */
       html += `
         <rect
           x="85"
@@ -1177,7 +1207,7 @@
           y="25"
           font-size="13"
           fill="#444">
-          Pressure
+          Overall Pressure
         </text>
       `;
 
@@ -1239,8 +1269,8 @@
           `;
 
           /*
-            Add dots only to temperature lines.
-            Overall pressure remains a dashed line.
+            Temperature lines show dots.
+            Overall Pressure is a dashed line only.
           */
           if (
             line.color !==
@@ -1404,6 +1434,9 @@
       firstData
     );
 
+    /*
+      Update every five seconds.
+    */
     setInterval(
       function() {
         const newData =
